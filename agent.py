@@ -12,6 +12,9 @@ class Agent():
 	start_point = None
 	destination_point = None
 	
+	test_mode = False
+	
+	
 	#x.c = Q_intersection = dict()
 	#Q_road_segment = dict()
 	

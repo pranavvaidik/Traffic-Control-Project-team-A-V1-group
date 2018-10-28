@@ -6,7 +6,14 @@ class environment():
 	
 	exit_nodes = [(-1,2),(0,-1),(3,0),(2,3)]
 	
+	random_lights = True
+	
 	def __init__(self):
+	
+		# TODO: change road segment keys for all the roads according to Mansi's email
+		# also change the lengths accordingly
+		# 
+	
 		self.road_segments = dict()
 		
 		#initializing the entry/exit road segments
@@ -62,6 +69,12 @@ class environment():
 		
 		
 	def update_traffic_lights(self):
+		# TODO: Update traffic lights randomly
+		
+		# if random lights is true
+		
+		#else, call their function
+		
 		
 	
 		
