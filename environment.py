@@ -2,69 +2,66 @@
 
 
 class environment():
-	nodes = [(-1,2), (0,-1), (0,0), (0,1), (0,2), (1,0), (1,1), (1,2), (2,0), (2,1), (2,2), (2,3), (3,0)]
+	nodes = [(62,65), (-3,62), (0,62), (31,62), (62,62), (0,31), (31,31), (62,31), (0,0), (31,0), (2,2), (65,0), (0,-3)]
 	
-	exit_nodes = [(-1,2),(0,-1),(3,0),(2,3)]
+	exit_nodes = [(62,65),(-3,62),(0,-3),(65,0)]
 	
 	random_lights = True
 	
 	def __init__(self):
 	
-		# TODO: change road segment keys for all the roads according to Mansi's email
-		# also change the lengths accordingly
-		# 
 	
 		self.road_segments = dict()
 		
 		#initializing the entry/exit road segments
-		self.road_segments[((0,-1),(0,0))] = [None]*2
-		self.road_segments[((0,0),(0,-1))] = [None]*2
+		self.road_segments[((-3,62),(0,62))] = [None]*2
+		self.road_segments[((0,62),(-3,62))] = [None]*2
 		
-		self.road_segments[((-1,2),(0,2))] = [None]*2
-		self.road_segments[((0,2),(-1,2))] = [None]*2
+		self.road_segments[((62,65),(62,62))] = [None]*2
+		self.road_segments[((62,62),(62,65))] = [None]*2
 		
-		self.road_segments[((2,2),(2,3))] = [None]*2
-		self.road_segments[((2,3),(2,2))] = [None]*2
+		self.road_segments[((62,0),(65,0))] = [None]*2
+		self.road_segments[((65,0),(62,0))] = [None]*2
 		
-		self.road_segments[((2,0),(3,0))] = [None]*2
-		self.road_segments[((3,0),(2,0))] = [None]*2
+		self.road_segments[((0,0),(0,-3))] = [None]*2
+		self.road_segments[((0,-3),(0,0))] = [None]*2
 		
 		#initializing the rest of the road segments
-		self.road_segments[((0,0),(0,1))] = [None]*30	
-		self.road_segments[((0,1),(0,0))] = [None]*30
+		self.road_segments[((0,62),(31,62))] = [None]*30	
+		self.road_segments[((31,62),(0,62))] = [None]*30
 		
-		self.road_segments[((0,2),(0,1))] = [None]*30	
-		self.road_segments[((0,1),(0,2))] = [None]*30
+		self.road_segments[((62,62),(31,62))] = [None]*30	
+		self.road_segments[((31,62),(62,62))] = [None]*30
 		
-		self.road_segments[((0,0),(1,0))] = [None]*30	
-		self.road_segments[((1,0),(0,0))] = [None]*30
+		self.road_segments[((0,62),(0,31))] = [None]*30	
+		self.road_segments[((0,31),(0,62))] = [None]*30
 		
-		self.road_segments[((1,1),(0,1))] = [None]*30	
-		self.road_segments[((0,1),(1,1))] = [None]*30
+		self.road_segments[((31,31),(31,62))] = [None]*30	
+		self.road_segments[((31,62),(31,31))] = [None]*30
 		
-		self.road_segments[((0,2),(1,2))] = [None]*30	
-		self.road_segments[((1,2),(0,2))] = [None]*30
+		self.road_segments[((62,62),(62,31))] = [None]*30	
+		self.road_segments[((62,31),(62,62))] = [None]*30
 		
-		self.road_segments[((1,0),(1,1))] = [None]*30	
-		self.road_segments[((1,1),(1,0))] = [None]*30
+		self.road_segments[((0,31),(31,31))] = [None]*30	
+		self.road_segments[((31,31),(0,31))] = [None]*30
 		
-		self.road_segments[((1,1),(1,2))] = [None]*30	
-		self.road_segments[((1,2),(1,1))] = [None]*30
+		self.road_segments[((31,31),(62,31))] = [None]*30	
+		self.road_segments[((62,31),(31,31))] = [None]*30
 		
-		self.road_segments[((1,0),(2,0))] = [None]*30	
-		self.road_segments[((2,0),(1,0))] = [None]*30
+		self.road_segments[((0,31),(0,0))] = [None]*30	
+		self.road_segments[((0,0),(0,31))] = [None]*30
 		
-		self.road_segments[((1,1),(2,1))] = [None]*30	
-		self.road_segments[((2,1),(1,1))] = [None]*30
+		self.road_segments[((31,31),(31,0))] = [None]*30	
+		self.road_segments[((31,0),(31,31))] = [None]*30
 		
-		self.road_segments[((2,2),(1,2))] = [None]*30	
-		self.road_segments[((1,2),(2,2))] = [None]*30
+		self.road_segments[((62,0),(62,31))] = [None]*30	
+		self.road_segments[((62,31),(62,0))] = [None]*30
 		
-		self.road_segments[((2,1),(2,0))] = [None]*30	
-		self.road_segments[((2,0),(2,1))] = [None]*30
+		self.road_segments[((31,0),(0,0))] = [None]*30	
+		self.road_segments[((0,0),(31,0))] = [None]*30
 		
-		self.road_segments[((2,1),(2,2))] = [None]*30	
-		self.road_segments[((2,2),(2,1))] = [None]*30
+		self.road_segments[((31,0),(62,0))] = [None]*30	
+		self.road_segments[((62,0),(31,0))] = [None]*30
 		
 		
 		
