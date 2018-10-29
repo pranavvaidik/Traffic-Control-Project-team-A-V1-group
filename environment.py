@@ -1,5 +1,5 @@
 # add relevant libraries here
-
+import numpy as np
 
 class environment():
 	nodes = [(62,65), (-3,62), (0,62), (31,62), (62,62), (0,31), (31,31), (62,31), (0,0), (31,0), (2,2), (65,0), (0,-3)]
@@ -8,9 +8,13 @@ class environment():
 	
 	random_lights = True
 	
+	
+	
 	def __init__(self):
-	
-	
+		
+		# set time to zero
+		self.time = 0
+		
 		self.road_segments = dict()
 		
 		#initializing the entry/exit road segments
@@ -71,8 +75,31 @@ class environment():
 		# if random lights is true
 		
 		#else, call their function
-		
-		
+   		traffic_lights = []
+   		if random_lights == True:
+        		for loc in nodes:
+       				dirs = [None]
+            			if loc not in exit_nodes:
+                			x = loc[0]
+               				y = loc[1]
+                			if x < 62 and x > 0:
+                    				dirs.extend(['EAST','WEST'])
+                			elif x == 0:
+			               		dirs.append('EAST')
+            				else:
+                    				dirs.append('WEST')
+                    
+                			if y < 62 and y > 0:
+                    				dirs.extend(['NORTH','SOUTH'])
+                			elif y == 0:
+                    				dirs.append('NORTH')
+                			else:
+                    				dirs.append('SOUTH')
+                
+                green = np.random.choice(dirs)
+                traffic_lights.append('GLDT ' + green + ' for ' + str(loc))
+       
+   	return traffic_lights	
 	
 		
 	
