@@ -1,5 +1,5 @@
 # import necessary libraries and environment.py
-
+import numpy as np
 
 
 #creating agent class
@@ -14,17 +14,15 @@ class Agent():
 	
 	test_mode = False
 	
-	
-	#x.c = Q_intersection = dict()
-	#Q_road_segment = dict()
-	
 	epsilon = 1
+	learning_rate = 1
 	
-	def __init__(self):
+	
+	def __init__(self, epsilon, learning_rate, is_learning = False):
 		self.Q_intersection = dict()
 		self.Q_road_segment = dict()
-		self.epsilon = 1
-		self.learning_rate = 1
+		self.epsilon = epsilon
+		self.learning_rate = learning_rate
 		self.is_at_intersection = False
 		
 		
@@ -37,15 +35,29 @@ class Agent():
 	def next_waypoint(self):
 		#uses self.location and self.destination to plan the next waypoint
 		
-	def move_to_next_location():
 		
+	def build_state():
 		
+	def choose_action():
+	
+	
+	def learn():
+	
+	def update():
+	
+	
+	def dist_to_destination():
+		#calculates the minimum distance to destination from current location
+	
+	
+	
+	
 
 class Dummy_agent():
 	#takes actions randomly. Always follows rules rigorously
 	
 	def __init__(self):
-	
+		
 	
 	def get_inputs(self):
 		# gets inputs from environment and i-group about lights and traffic respectively
