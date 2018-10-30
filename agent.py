@@ -1,5 +1,6 @@
 # import necessary libraries and environment.py
 import numpy as np
+import environment
 
 
 #creating agent class
