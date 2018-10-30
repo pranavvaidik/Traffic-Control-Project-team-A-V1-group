@@ -4,7 +4,7 @@ import environment
 
 
 #creating agent class
-class Agent():
+class Agent(env):
 	# This is the intelligent agent we are trying to train and test
 	
 	location = None #needs to be set
@@ -28,7 +28,7 @@ class Agent():
 		
 		
 	
-	def get_inputs(self)
+	def get_inputs(self):
 		#gets information from the environment about the traffic
 		#gets information from the i-groups about the lights
 	
@@ -39,8 +39,30 @@ class Agent():
 		
 	def build_state():
 		
-	def choose_action():
+		if self.is_at_intersection:
+			#collect waypoint information
+			
+			#see if any vehicle is curently there
+			
+			#see if the vehicle has green light
+			
+			# return dictionary
+			
+		else:
+			#check if next slot is empty
+			
+			#return dictonary or flag value
 	
+		
+	def choose_action():
+		
+		if self.is_at_intersection:
+			# left, right, straight, or None
+			
+		else:
+			# move forward or None
+			
+		
 	
 	def learn():
 	
