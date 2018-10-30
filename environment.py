@@ -74,6 +74,9 @@ class environment():
 		
 		# if random lights is true
 		
+		
+		#add comments
+		
 		#else, call their function
    		traffic_lights = []
    		if random_lights == True:
