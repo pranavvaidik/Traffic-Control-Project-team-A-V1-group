@@ -62,4 +62,9 @@ class Dummy_agent():
 	
 	def get_inputs(self):
 		# gets inputs from environment and i-group about lights and traffic respectively
+		## NAZIA
+		# if test_mode == False:
+		#	call update_traffic_lights ??
+		# else:
+		#	call i-groups functions ???
 		
