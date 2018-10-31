@@ -4,7 +4,7 @@ import environment
 
 
 #creating agent class
-class Agent(env):
+class LearningAgent(env):
 	# This is the intelligent agent we are trying to train and test
 	
 	location = None #needs to be set
@@ -69,14 +69,14 @@ class Agent(env):
 	def update():
 	
 	
-	def dist_to_destination():
+	def dist_to_destination(self):
 		#calculates the minimum distance to destination from current location
-	
+		
 	
 	
 	
 
-class Dummy_agent():
+class DummyAgent():
 	#takes actions randomly. Always follows rules rigorously
 	
 	def __init__(self):
