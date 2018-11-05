@@ -7,7 +7,7 @@ import environment
 class LearningAgent(env):
 	# This is the intelligent agent we are trying to train and test
 	
-	location = None #needs to be set
+	location = None #needs to be set #will be a tuple; first entry will be its location on the segment, second entry will be a tuple that describes the segment
 	
 	time_taken = 0
 	start_point = None
@@ -25,6 +25,7 @@ class LearningAgent(env):
 		self.epsilon = epsilon
 		self.learning_rate = learning_rate
 		self.is_at_intersection = False
+		self.ID = None
 		
 		
 	
@@ -70,9 +71,14 @@ class LearningAgent(env):
 	
 	
 	def dist_to_destination(self):
-		#calculates the minimum distance to destination from current location
-		
-	
+		#calculates the l1 distance to destination from current location
+		if self.location != None and self.destination_point != None :
+			location_on_road = self.location[0]
+			next_intersection = self.location[0][1]
+			
+			# get total distance
+			dist = location_on_road + 1 + np.linalg.norm(np.linalg.subtract(self.destination_point, next_intersection),1)
+		return dist
 	
 	
 

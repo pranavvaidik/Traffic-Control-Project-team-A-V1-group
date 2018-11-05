@@ -90,8 +90,6 @@ class Environment():
 	
 	def next_segment(self, current_road_segment):
 		# returns the set of possible road segments for each action as a dictionary {action : next segment} format
-		
-		
 		current_heading = self.headings([current_road_segment])
 		
 		#find the roads that start with the same intersection, except for the one that is going in the reverse direction (no U-turns)
@@ -132,10 +130,14 @@ class Environment():
 		
 		
 	def create_agent_queue(self):
-	
+		
+		#maintains the queue of agents, sends them into the traffic system after randomly assigning the starting points for the agents.
+		
 		return	
 				
 	def create_agent(self, agent_class, *args, **kwargs):
+		
+		#creates agents.
 		
 		agent = agent_class(self, *args, **kwargs)
         	#self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
