@@ -129,19 +129,51 @@ class LearningAgent():
 			
 		return
 		
-	def choose_action(self):
+	def choose_action(self, state):
 		
 		if self.is_at_intersection:
 			# left, right, straight, or None
-			x=1
+			valid_actions_list = self.env.valid_actions(self.location)
+			valid_actions_list.append(None)
+			
+			if not is_learning:
+				action = np.random.choice(valid_actions_list)
+			else:
+				is_random = np.random.choice([True,False], p = [self.epsilon, 1-self.epsilon])
+				# using epsilon greedy method
+				if is_random:
+					action = np.random.choice(valid_actions_list)
+				else:
+					best_actions = [actions for actions, q_value in self.Q_intersection[state].items() if q_value == self.get_maxQ(state)]
+					action = random.choice(best_actions)
+			
 		else:
 			# move forward or None
 			valid_actions_list = ['forward',None]
 			
+			if not is_learning:
+				action = np.random.choice(valid_actions_list)
+			else:
+				is_random = np.random.choice([True,False], p = [self.epsilon, 1-self.epsilon])
+				# using epsilon greedy method
+				if is_random:
+					action = np.random.choice(valid_actions_list)
+				else:
+					best_actions = [actions for actions, q_value in self.Q_road_segment[state].items() if q_value == self.get_maxQ(state)]
+					action = random.choice(best_actions)
 			
 			
 			
-		return
+		return action
+	
+	def get_maxQ(self, state):
+		
+		if self.is_at_intersection:
+			maxQ = max(self.Q_intersection[state].values())
+		else:
+			maxQ = max(self.Q_road_segment[state].values())
+		return maxQ
+	
 	
 	def learn(self):
 	
