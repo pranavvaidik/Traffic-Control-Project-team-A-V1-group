@@ -83,10 +83,10 @@ class LearningAgent():
 				valid_actions = self.env.valid_actions(self.location)
 				
 				self.Q_intersection[state] = dict()
-				self.Q_intersection[state][None] = 0.0
-				self.Q_intersection[state]['forward'] = 0.0
-				self.Q_intersection[state]['left'] = 0.0
-				self.Q_intersection[state]['right'] = 0.0
+				
+				for action in valid_actions:
+					self.Q_intersection[state][action] = 0.0
+					
 		else:
 			if state not in self.Q_road_segment.keys():	
 				self.Q_road_segment[state] = dict()
