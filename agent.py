@@ -38,12 +38,55 @@ class LearningAgent():
 		return
 		
 	def next_waypoint(self):
-		#uses self.location and self.destination to plan the next waypoint
-		return
+		#only called when agent is at intersection
+		
+		current_road = self.location[1]
+		current_intersection = current_road[1]
+		
+		diff = np.linalg.subtract(self.destination, current_intersection)
+		
+		# get the directions to destination from the next intersection
+		directions_to_destination = []
+		
+		if diff[0] > 0:
+			directions_to_destination.append('NORTH')
+		elif diff[0] < 0:
+			directions_to_destination.append('SOUTH')
+		
+		if diff[1] > 0:
+			directions_to_destination.append('EAST')
+		elif diff[1] < 0:
+			directions_to_destination.append('WEST')
+		
+		#possible actions at next intersection
+		valid_actions = env.next_segment(current_road)
+		
+		# get roads and actions that match the directions to the destination point
+		
+		next_road_headings = env.headings(valid_actions.values())
+		
+		best_action_dirs = list(set(directions_to_destination) & set(next_road_headings))
+		
+		if len(best_action_dirs) == 0:
+			# all next roads are moving away from the destination. all actions would be equally bad
+			best_actions = valid_actions.keys()
+		else:
+			# select list of actions that would point towards destination
+			best_actions = []
+			for i, action in enumerate(valid_actions.keys()):
+				if next_road_headings[i] in best_action_dirs:
+					best_actions.append(action)
+		
+		# choose best route randomly.
+		return np.random.choice(best_actions)
 		
 	def build_state(self):
 		
 		if self.is_at_intersection:
+			
+			
+			# The state should contain the following information : light, waypoint, forward_slot_empty, left_slot_empty, right_slot_empty, direction_with_least_congestion
+			
 			#collect waypoint information
 			
 			#see if any vehicle is curently there
@@ -54,7 +97,10 @@ class LearningAgent():
 			
 		else:
 			#check if next slot is empty; state will be of the form: {next_slot_empty: True/False}
-			
+			if self.env.road_segments[location[1]][location[0] - 1] == None:
+				state = {'next_slot_empty':True}
+			else:
+				state = {'next_slot_empty':False}
 			
 			#return dictonary or flag value
 			
@@ -70,7 +116,7 @@ class LearningAgent():
 			x=1
 		return
 	
-	def learn():
+	def learn(self):
 	
 		return
 	
