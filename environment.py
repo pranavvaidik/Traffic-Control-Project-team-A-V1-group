@@ -1,6 +1,6 @@
 # add relevant libraries here
 import numpy as np
-from agent import LearningAgent, DummyAgent
+#from agent import LearningAgent, DummyAgent
 
 
 class Environment():
@@ -14,19 +14,19 @@ class Environment():
 	
 	for key in ['NORTH','SOUTH','EAST','WEST']:
 		turn_map[key] = dict()
-		turn_map[key][key] = 'STRAIGHT'
+		turn_map[key][key] = 'forward'
 	
-	turn_map['NORTH']['EAST'] = 'RIGHT'
-	turn_map['NORTH']['WEST'] = 'LEFT'
+	turn_map['NORTH']['EAST'] = 'right'
+	turn_map['NORTH']['WEST'] = 'left'
 	
-	turn_map['SOUTH']['WEST'] = 'RIGHT'
-	turn_map['SOUTH']['EAST'] = 'LEFT'
+	turn_map['SOUTH']['WEST'] = 'right'
+	turn_map['SOUTH']['EAST'] = 'left'
 	
-	turn_map['EAST']['NORTH'] = 'LEFT'
-	turn_map['EAST']['SOUTH'] = 'RIGHT'
+	turn_map['EAST']['NORTH'] = 'left'
+	turn_map['EAST']['SOUTH'] = 'right'
 	
-	turn_map['WEST']['NORTH'] = 'RIGHT'
-	turn_map['WEST']['SOUTH'] = 'LEFT'
+	turn_map['WEST']['NORTH'] = 'right'
+	turn_map['WEST']['SOUTH'] = 'left'
 	
 	
 	
@@ -88,6 +88,21 @@ class Environment():
 		self.road_segments[((62,0),(31,0))] = [None]*30
 		
 	
+	def valid_actions(self, location):
+		
+		# takes in the location of a vehicle and gives all valid actions as a dictionary, including the next segments if the car is at the intersection.
+		
+		# if not at intersection
+		if location[0] !=0:
+			actions = ['forward', None]
+			
+		else:
+			next_segments = self.next_segment(location[1])
+			actions = next_segments.keys()
+		
+		return actions
+	
+	
 	def next_segment(self, current_road_segment):
 		# returns the set of possible road segments for each action as a dictionary {action : next segment} format
 		current_heading = self.headings([current_road_segment])
@@ -128,7 +143,7 @@ class Environment():
 		return headings
 		
 		
-		
+	
 	
 				
 	def create_agent(self, is_learning = True, epsilon = 1, learning_rate = 1):
@@ -189,24 +204,7 @@ class Environment():
 		
 		return
 		
-def run():
-	
-	#initializes the environment and the agents and runs the simulator
-	
-	env = Environment()
-	
-	# For training scneario
-	
-	agent = env.create_agent(is_learning=True)
-	
-	
-	
-	
-	
-	
 
-if __name__ == '__main__':
-	run()
 		
 		
 		

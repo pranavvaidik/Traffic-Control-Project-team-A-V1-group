@@ -1,6 +1,6 @@
 # import necessary libraries and environment.py
 import numpy as np
-#from environment import Environment
+from environment import Environment
 
 #creating agent class
 class LearningAgent():
@@ -18,14 +18,14 @@ class LearningAgent():
 	learning_rate = 1
 	
 	
-	def __init__(self, epsilon, learning_rate, is_learning = False):
+	def __init__(self, env, epsilon, learning_rate, is_learning = False):
 		self.Q_intersection = dict()
 		self.Q_road_segment = dict()
 		self.epsilon = epsilon
 		self.learning_rate = learning_rate
 		self.is_at_intersection = False
 		self.ID = None
-		
+		self.env = env
 		
 	
 	def get_inputs(self):
@@ -79,7 +79,9 @@ class LearningAgent():
 		# if state is in the Q-function, add state in dictionary
 		
 		if self.is_at_intersection:
-			if state not in self.Q_intersection.keys():	
+			if state not in self.Q_intersection.keys():
+				valid_actions = self.env.valid_actions(self.location)
+				
 				self.Q_intersection[state] = dict()
 				self.Q_intersection[state][None] = 0.0
 				self.Q_intersection[state]['forward'] = 0.0
@@ -142,3 +144,22 @@ class DummyAgent():
 		
 		return
 		
+		
+def run():
+	
+	#initializes the environment and the agents and runs the simulator
+	
+	env = Environment()
+	
+	# For training scneario
+	
+	agent = env.create_agent(is_learning=True)
+	
+	
+	
+	
+	
+	
+
+if __name__ == '__main__':
+	run()
