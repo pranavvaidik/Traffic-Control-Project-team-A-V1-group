@@ -176,7 +176,7 @@ class DummyAgent():
 	#takes actions randomly. Always follows rules rigorously
 	
 	location = None   # Needs to be assigned a correct value.
-	start_point = np.random.choice(Environment.exit_nodes)
+	start_point = None # np.random.choice(Environment.exit_nodes)
 	
 	def __init__(self, env):
 		self.Q_intersection = dict()
@@ -186,10 +186,13 @@ class DummyAgent():
 		self.env = env
 		
 		return
-			
+	
+	valid_actions_list = env.valid_actions(location)
+	
 	
 	def get_inputs(self):
 		# gets inputs from environment and i-group about lights and traffic respectively
+		traffic_lights = update_traffic_lights()
 		
 		return
 		
