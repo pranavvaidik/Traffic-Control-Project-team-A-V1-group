@@ -146,36 +146,39 @@ class Environment():
 	
 	def update_traffic_lights(self):
 		# TODO: Update traffic lights randomly
-		
-		# if random lights is true
-		
-		
-		#add comments
-		
-		#else, call their function
-   		traffic_lights = []
-   		if random_lights == True:
-        		for loc in nodes:
-       				dirs = [None]
-            			if loc not in exit_nodes:
-                			x = loc[0]
-               				y = loc[1]
-                			if x < 62 and x > 0:
-                    				dirs.extend(['EAST','WEST'])
-                			elif x == 0:
-			               		dirs.append('EAST')
-            				else:
-                    				dirs.append('WEST')
-                    
-                			if y < 62 and y > 0:
-                    				dirs.extend(['NORTH','SOUTH'])
-                			elif y == 0:
-                    				dirs.append('NORTH')
-                			else:
-                    				dirs.append('SOUTH')
+		tr = []
+
+		for loc in nodes:
+			dirs = [None]
+			if loc not in exit_nodes:
+				x = loc[0]
+				y = loc[1]
+        
+				if x < 62 and x > 0 :
+					dirs.extend(['EAST','WEST'])
+				elif x == 0:
+					dirs.append('EAST')
+				else :
+					dirs.append('WEST')
+        
+				if y < 62 and y > 0:
+					dirs.extend(['NORTH','SOUTH'])
+				elif y == 0:
+					dirs.append('NORTH')
+				else:
+					dirs.append('SOUTH')
                 
-                green = np.random.choice(dirs)
-                traffic_lights.append('GLDT ' + green + ' for ' + str(loc))
+				green = np.random.choice(dirs)
+				tr.append(green)
+        
+				traffic_lights = []
+				temp = []
+				for i in range (0,9):
+					temp.append(tr[i])
+					if (i+1) % 3 == 0 and i != 0:
+						traffic_lights.append(temp)
+						temp = []
+
        
    		return traffic_lights	
 	
