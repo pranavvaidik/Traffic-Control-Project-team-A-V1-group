@@ -101,20 +101,16 @@ class LearningAgent():
 			
 			# The state should contain the following information : light, waypoint, forward_slot_empty, left_slot_empty, right_slot_empty, direction_with_least_congestion
 			
-			#get lights
-			inputs = get_inputs()
+			#get lights and traffic
+			inputs = self.get_inputs()
 			
-			
+			#get waypoint
 			waypoint = self.next_waypoint()
 			
+			# may consider taking in the congestion, but ignore for now
 			
-			#collect waypoint information
-			
-			#see if any vehicle is curently there
-			
-			#see if the vehicle has green light
-			
-			# return dictionary
+			state = inputs
+			state['waypoint'] = waypoint
 			
 		else:
 			#check if next slot is empty; state will be of the form: {next_slot_empty: True/False}
