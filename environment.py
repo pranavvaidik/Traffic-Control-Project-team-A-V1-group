@@ -4,11 +4,13 @@ import numpy as np
 
 
 class Environment():
-	nodes = [(62,65), (-3,62), (0,62), (31,62), (62,62), (0,31), (31,31), (62,31), (0,0), (31,0), (2,2), (65,0), (0,-3)]
+	nodes = [(62,65), (-3,62), (0,62), (31,62), (62,62), (0,31), (31,31), (62,31), (0,0), (31,0), (62,0), (65,0), (0,-3)]
 	
 	exit_nodes = [(62,65),(-3,62),(0,-3),(65,0)]
 	
 	random_lights = True
+	
+	traffic_lights = dict()
 	
 	turn_map = dict()
 	
@@ -27,6 +29,16 @@ class Environment():
 	
 	turn_map['WEST']['NORTH'] = 'right'
 	turn_map['WEST']['SOUTH'] = 'left'
+	
+	
+	
+	# directions of vehicles arriving at an intersection
+	directions_to_loc = dict()
+	
+	
+	
+	
+	
 	
 	congestion_map = dict()
 	
@@ -88,6 +100,13 @@ class Environment():
 		self.road_segments[((31,0),(62,0))] = [None]*30	
 		self.road_segments[((62,0),(31,0))] = [None]*30
 		
+		
+		for loc in self.nodes:
+			if loc not in self.exit_nodes:			
+        			# get all the legal directions at the intersection
+				roads_ending_at_loc = [item for item in self.road_segments.keys() if item[1] == loc]
+				self.directions_to_loc[loc] = self.headings(roads_ending_at_loc)
+				self.directions_to_loc[loc].append(None)
 	
 	def valid_actions(self, location):
 		
@@ -124,22 +143,22 @@ class Environment():
 		
 		#calculates and returns the direction of the vehicles in a road segment
 		
-		directions = [tuple(np.linalg.subtract(segment[1],segment[0])) for segment in road_segment_list]
-		headings = [None]*len(road_segment_list)
+		directions = [tuple(np.subtract(segment[1],segment[0])) for segment in road_segments_list]
+		headings = [None]*len(road_segments_list)
 		
 		for i, direction in enumerate(directions):
 			
 			if direction[0] == 0:
 				if direction[1] >= 0:
-					heading[i] = 'NORTH'
+					headings[i] = 'NORTH'
 				else:
-					heading[i] = 'SOUTH'	
+					headings[i] = 'SOUTH'	
 			
 			elif direction[1] == 0:
 				if direction[0] >= 0:
-					heading[i] = 'EAST'
+					headings[i] = 'EAST'
 				else:
-					heading[i] = 'WEST'
+					headings[i] = 'WEST'
 
 		return headings
 		
@@ -161,42 +180,13 @@ class Environment():
 
 	
 	def update_traffic_lights(self):
-		# TODO: Update traffic lights randomly
-		tr = []
-
-		for loc in nodes:
+		for loc in self.nodes:
 			dirs = [None]
-			if loc not in exit_nodes:
-				x = loc[0]
-				y = loc[1]
-        
-				if x < 62 and x > 0 :
-					dirs.extend(['EAST','WEST'])
-				elif x == 0:
-					dirs.append('EAST')
-				else :
-					dirs.append('WEST')
-        
-				if y < 62 and y > 0:
-					dirs.extend(['NORTH','SOUTH'])
-				elif y == 0:
-					dirs.append('NORTH')
-				else:
-					dirs.append('SOUTH')
-                
-				green = np.random.choice(dirs)
-				tr.append(green)
-        
-				traffic_lights = []
-				temp = []
-				for i in range (0,9):
-					temp.append(tr[i])
-					if (i+1) % 3 == 0 and i != 0:
-						traffic_lights.append(temp)
-						temp = []
-
+			if loc not in self.exit_nodes:                
+                		#choose the signal randomly from legal directions
+				self.traffic_lights[loc] = np.random.choice(self.directions_to_loc[loc])
        
-   		return traffic_lights	
+   		return self.traffic_lights	
 	
 	
 	def congestion_at_intersection(self, intersection):

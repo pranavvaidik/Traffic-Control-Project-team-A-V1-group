@@ -43,7 +43,7 @@ class LearningAgent():
 		current_road = self.location[1]
 		current_intersection = current_road[1]
 		
-		diff = np.linalg.subtract(self.destination, current_intersection)
+		diff = np.subtract(self.destination, current_intersection)
 		
 		# get the directions to destination from the next intersection
 		directions_to_destination = []
