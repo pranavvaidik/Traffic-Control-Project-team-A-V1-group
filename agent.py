@@ -129,20 +129,40 @@ class LearningAgent():
 class DummyAgent():
 	#takes actions randomly. Always follows rules rigorously
 	
-	def __init__(self):
+	location = None   # Needs to be assigned a correct value.
+	start_point = np.random.choice(Environment.exit_nodes)
 	
-		return
+	def __init__(self, env):
+		self.Q_intersection = dict()
+		self.Q_road_segment = dict()
+		self.is_at_intersection = False
+		self.ID = None
+		self.env = env
 		
+		return
+			
 	
 	def get_inputs(self):
 		# gets inputs from environment and i-group about lights and traffic respectively
-		## NAZIA
-		# if test_mode == False:
-		#	call update_traffic_lights ??
-		# else:
-		#	call i-groups functions ???
 		
 		return
+		
+	def choose_action(self):
+		
+		if self.is_at_intersection:
+			# left, right, straight, or None
+			x=1
+		else:
+			# move forward or None
+			x=1
+		return
+		
+	def act(self):
+		# move/ don't move, get reward, update Q-function
+		
+		return
+		
+	
 		
 		
 def run():
