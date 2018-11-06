@@ -6,7 +6,7 @@ from environment import Environment
 class LearningAgent():
 	# This is the intelligent agent we are trying to train and test
 	
-	location = None #needs to be set #will be a tuple; first entry will be its location on the segment, second entry will be a tuple that describes the segment
+	location = None  #will be a tuple; first entry will be its location on the segment, second entry will be a tuple that describes the segment
 	
 	time_taken = 0
 	start_point = None
@@ -32,10 +32,22 @@ class LearningAgent():
 		#gets information from the environment about the traffic
 		#gets information from the i-groups about the lights
 		
-
+		lights = env.traffic_lights[self.location[1]]
 		
+		heading = env.headings([location[1]])[0]
 		
-		return
+		if lights == heading:
+			inputs = {'light':'green'}
+		else:
+			inputs = {'light':'red'}
+		
+		next_actions = env.next_segment(location[1])
+		
+		for action in next_actions.keys():
+			#will tell if slot is empty for each valid turn. True means slot is empty, false is when there is a vehicle present.
+			inputs[action] = (next_actions[action][-1] == None)
+		
+		return inputs
 		
 	def next_waypoint(self):
 		#only called when agent is at intersection
@@ -79,13 +91,22 @@ class LearningAgent():
 		
 		# choose best route randomly.
 		return np.random.choice(best_actions)
-		
+	
+	
+	
 	def build_state(self):
 		
 		if self.is_at_intersection:
 			
 			
 			# The state should contain the following information : light, waypoint, forward_slot_empty, left_slot_empty, right_slot_empty, direction_with_least_congestion
+			
+			#get lights
+			inputs = get_inputs()
+			
+			
+			waypoint = self.next_waypoint()
+			
 			
 			#collect waypoint information
 			
@@ -158,6 +179,7 @@ class LearningAgent():
 	def act(self):
 		# move/ don't move, get reward, update Q-function
 		
+		
 		return
 		
 	def dist_to_destination(self):
@@ -193,6 +215,10 @@ class DummyAgent():
 	def get_inputs(self):
 		# gets inputs from environment and i-group about lights and traffic respectively
 		traffic_lights = update_traffic_lights()
+		
+		
+		
+		
 		
 		return
 		
