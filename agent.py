@@ -211,11 +211,27 @@ class DummyAgent():
 	
 	valid_actions_list = env.valid_actions(location)
 	
-	
-	def get_inputs(self):
-		# gets inputs from environment and i-group about lights and traffic respectively
-		traffic_lights = update_traffic_lights()
 		
+	def get_inputs(self):
+		#gets information from the environment about the traffic
+		#gets information from the i-groups about the lights
+		
+		lights = env.traffic_lights[self.location[1]]
+		
+		heading = env.headings([location[1]])[0]
+		
+		if lights == heading:
+			inputs = {'light':'green'}
+		else:
+			inputs = {'light':'red'}
+		
+		next_actions = env.next_segment(location[1])
+		
+		for action in next_actions.keys():
+			#will tell if slot is empty for each valid turn. True means slot is empty, false is when there is a vehicle present.
+			inputs[action] = (next_actions[action][-1] == None)
+		
+		return inputs
 		
 		
 		
