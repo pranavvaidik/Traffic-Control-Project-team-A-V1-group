@@ -28,6 +28,7 @@ class Environment():
 	turn_map['WEST']['NORTH'] = 'right'
 	turn_map['WEST']['SOUTH'] = 'left'
 	
+	congestion_map = dict()
 	
 	
 	def __init__(self):
@@ -197,6 +198,23 @@ class Environment():
        
    		return traffic_lights	
 	
+	
+	def congestion_at_intersection(self, intersection):
+		roads_to_intersection = [item for item in self.road_segments.keys() if item[1] == intersection[1]]
+		
+		congestion = 0
+		for road in roads_to_intersection:
+			#locate the first empty slot on the road segment to find the number of cars waiting at the intersection for that road segment
+			congestion = congestion + self.road_segments[road].index(None)
+		return congestion
+		
+	def congestion_calc(self):
+		
+		intersections = [item for item in self.nodes if item not in self.exit_nodes]
+		for intersection in intersections:
+			congestion_map[intersection] = self.congestion_at_intersection(intersection)
+		
+		return
 	
 	def update_traffic(self):
 	
