@@ -125,7 +125,7 @@ class Environment():
 	
 	def next_segment(self, current_road_segment):
 		# returns the set of possible road segments for each action as a dictionary {action : next segment} format
-		current_heading = self.headings([current_road_segment])
+		current_heading = self.headings([current_road_segment])[0]
 		
 		#find the roads that start with the same intersection, except for the one that is going in the reverse direction (no U-turns)
 		next_road_segments = [item for item in self.road_segments.keys() if item[0] == current_road_segment[1] and item[1] != current_road_segment[0]]
