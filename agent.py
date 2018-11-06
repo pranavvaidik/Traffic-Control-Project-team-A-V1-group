@@ -205,9 +205,7 @@ class DummyAgent():
 		
 		return
 	
-	valid_actions_list = env.valid_actions(location)
 	
-		
 	def get_inputs(self):
 		#gets information from the environment about the traffic
 		#gets information from the i-groups about the lights
@@ -229,21 +227,19 @@ class DummyAgent():
 		
 		return inputs
 		
-		
-		
-		
-		return
-		
+	
 	def choose_action(self):
 		
 		if self.is_at_intersection:
 			# left, right, straight, or None
+			valid_actions_list
 			x=1
 		else:
 			# move forward or None
 			x=1
 		return
 		
+	
 	def act(self):
 		# move/ don't move, get reward, update Q-function
 		
