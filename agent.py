@@ -45,9 +45,6 @@ class LearningAgent():
 		else:
 			inputs = {'light':'red', 'forward' : None, 'left' : None, 'right' : None}
 		
-		
-		
-		
 		next_actions = env.next_segment(location[1])
 		
 		for action in next_actions.keys():
@@ -242,12 +239,25 @@ class DummyAgent():
 		
 		if self.is_at_intersection:
 			# left, right, straight, or None
-			valid_actions_list
-			x=1
+			inputs = self.get_inputs()
+			if inputs['light'] == 'red' :
+				only_action = None
+			else :
+				acts = []
+				for acs in ['forward', 'right', 'left'] :
+					if inputs[acs] == True
+						acts.append(acs)
+						
+				only_action = np.random.choice(acts)		
 		else:
 			# move forward or None
-			x=1
-		return
+			current_road = env.road_segments[location[1]]
+			if current_road[location[0] + 1] == None :
+				only_action = 'forward'
+			else :
+				only_action = None
+		
+		return only_action
 		
 	
 	def act(self):
