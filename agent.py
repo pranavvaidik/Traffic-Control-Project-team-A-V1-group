@@ -41,11 +41,11 @@ class LearningAgent():
 		#uses self.location and self.destination to plan the next waypoint
 		return
 		
-	def build_state():
+	def build_state(self):
 		
 		if self.is_at_intersection:
 			#collect waypoint information
-			x=1
+			
 			#see if any vehicle is curently there
 			
 			#see if the vehicle has green light
@@ -53,13 +53,14 @@ class LearningAgent():
 			# return dictionary
 			
 		else:
-			#check if next slot is empty
-			x=1
+			#check if next slot is empty; state will be of the form: {next_slot_empty: True/False}
+			
+			
 			#return dictonary or flag value
 			
 		return
 		
-	def choose_action():
+	def choose_action(self):
 		
 		if self.is_at_intersection:
 			# left, right, straight, or None
@@ -73,7 +74,32 @@ class LearningAgent():
 	
 		return
 	
-	def update():
+	def createQ(self):
+		
+		# if state is in the Q-function, add state in dictionary
+		
+		if self.is_at_intersection:
+			if state not in self.Q_intersection.keys():	
+				self.Q_intersection[state] = dict()
+				self.Q_intersection[state][None] = 0.0
+				self.Q_intersection[state]['forward'] = 0.0
+				self.Q_intersection[state]['left'] = 0.0
+				self.Q_intersection[state]['right'] = 0.0
+		else:
+			if state not in self.Q_road_segment.keys():	
+				self.Q_road_segment[state] = dict()
+				self.Q_road_segment[state][None] = 0.0
+				self.Q_road_segment[state]['forward'] = 0.0
+		
+		return
+	
+	def update(self):
+		#called at the end of each time instance. when called, it builds the state, add the state to the Q-function, choose action, act and get reward, and learn and update its Q-function
+		state = self.build_state()          # Get current state
+        	self.createQ(state)                 # Create 'state' in Q-table
+        	action = self.choose_action(state)  # Choose an action
+        	reward = self.act(self, action) # Receive a reward
+        	self.learn(state, action, reward)   # Q-learn
 		
 		
 		#move, get reward, update Q-function
