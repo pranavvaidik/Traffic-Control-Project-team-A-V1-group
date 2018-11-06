@@ -14,8 +14,12 @@ class LearningAgent():
 	
 	test_mode = False
 	
+	state = None
+	
 	epsilon = 1
 	learning_rate = 1
+	
+	
 	
 	
 	def __init__(self, env, epsilon, learning_rate, is_learning = False):
@@ -37,9 +41,12 @@ class LearningAgent():
 		heading = env.headings([location[1]])[0]
 		
 		if lights == heading:
-			inputs = {'light':'green'}
+			inputs = {'light':'green', 'forward' : None, 'left' : None, 'right' : None}
 		else:
-			inputs = {'light':'red'}
+			inputs = {'light':'red', 'forward' : None, 'left' : None, 'right' : None}
+		
+		
+		
 		
 		next_actions = env.next_segment(location[1])
 		
@@ -109,15 +116,14 @@ class LearningAgent():
 			
 			# may consider taking in the congestion, but ignore for now
 			
-			state = inputs
-			state['waypoint'] = waypoint
+			self.state = (waypoint, inputs['light'], inputs['forward'], inputs['left'], inputs['right'] )
 			
 		else:
 			#check if next slot is empty; state will be of the form: {next_slot_empty: True/False}
 			if self.env.road_segments[location[1]][location[0] - 1] == None:
-				state = {'next_slot_empty':True}
+				state = (True)  #{'next_slot_empty':True}
 			else:
-				state = {'next_slot_empty':False}
+				state = (False) #{'next_slot_empty':False}
 			
 			#return dictonary or flag value
 			
@@ -130,7 +136,11 @@ class LearningAgent():
 			x=1
 		else:
 			# move forward or None
-			x=1
+			valid_actions_list = ['forward',None]
+			
+			
+			
+			
 		return
 	
 	def learn(self):
