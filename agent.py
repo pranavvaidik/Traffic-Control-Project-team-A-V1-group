@@ -493,7 +493,7 @@ class DummyAgent():
 		
 	
 	def choose_action(self):
-		
+		# This function chooses an action from all possible actions based on its location
 		if self.is_at_intersection:
 			# left, right, straight, or None
 			inputs = self.get_inputs()
@@ -518,28 +518,27 @@ class DummyAgent():
 		
 	
 	def act(self):
-		# update location if move, otherwise make relevant changes
+		# update location and is_at_intersection flag after taking relevant action
 		action = self.choose_action()
 		if action != None :
 			if (location[0] - 1) != 0:
-				new_segment = [None] * len(env.road_segments[location[1]])
-				new_segment[location[0] + 1] = self.ID 
-				env.road_segments[location[1]] = new_segment
+				env.road_segments[location[0] + 1] = self.ID 
+				env.road_segments[location[0]] = None
 				new_loc = location[0] - 1
 				new_seg = location[1]
 				location = (new_loc, new_seg)
 			elif location[0] == 0 :
+				env.road_segments[location[0]] = None
 				segments = env.next_segemnt(location[1])
 				new_seg = segments[action]
-				new_segment = [None] * len(env.road_segments[new_seg])
+				new_segment = env.road_segments[new_seg]
 				new_segment[0] = self.ID 
 				env.road_segments[new_seg] = new_segment
 				location = (30, new_seg)
 				self.is_at_intersection = False
 			elif (location[0] - 1) == 0 :
-				new_segment = [None] * len(env.road_segments[location[1]])
-				new_segment[location[0] + 1] = self.ID 
-				env.road_segments[location[1]] = new_segment
+				env.road_segments[location[0] + 1] = self.ID 
+				env.road_segments[location[0]] = None 
 				new_seg = location[1]
 				location = (0, new_seg)
 				self.is_at_intersection = True				
