@@ -206,6 +206,12 @@ class Environment():
 		
 		return
 	
+	
+	def step(self):
+	
+	return
+	
+	
 	def update_traffic(self):
 	
 		return

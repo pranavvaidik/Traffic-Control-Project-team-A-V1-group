@@ -1,6 +1,7 @@
 # import necessary libraries and environment.py
 import numpy as np
 from environment import Environment
+import math
 
 #creating agent class
 class LearningAgent():
@@ -31,6 +32,33 @@ class LearningAgent():
 		self.ID = None
 		self.env = env
 		
+	
+	def reset(self, destination=None, testing=False):
+        """ The reset function is called at the beginning of each trial.
+            'testing' is set to True if testing trials are being used
+            once training trials have completed. """
+
+        	# Select the destination as the new location to route to
+        	self.planner.route_to(destination)
+        
+        	# Update epsilon using a decay function
+        	# Update additional class parameters as needed
+        	# If 'testing' is True, set epsilon and alpha to 0
+	
+		if testing:
+			self.epsilon = 0
+			self.learning_rate = 0
+		else:
+			a = 0.035
+			c = -5
+			if self.epsilon == 1:
+				t = 0
+			else:
+				t = (math.log(1/self.epsilon-1) - c)/a
+				t=t+1
+				self.epsilon = 1/(math.exp(a*t+c)+1)
+
+        return
 	
 	def get_inputs(self):
 		#gets information from the environment about the traffic
