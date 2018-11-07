@@ -14,6 +14,12 @@ class Environment():
 	
 	turn_map = dict()
 	
+	agent_list_current = []
+	
+	agent_list_reached = []
+	
+	
+	
 	for key in ['NORTH','SOUTH','EAST','WEST']:
 		turn_map[key] = dict()
 		turn_map[key][key] = 'forward'
@@ -208,7 +214,37 @@ class Environment():
 	
 	
 	def step(self):
-	
+		
+		
+		
+		
+		# update traffic lights
+		self.update_traffic_lights()
+		
+		
+		# update all vehicles
+		temp = []
+		for agent in self.agent_list_current:
+			agent.update()
+			
+			# remove cars that reached exit nodes
+			if agent.location[1][1] in self.exit_nodes:
+				temp.append(agent)
+				agent_list_reached.append(agent)
+				
+			# also remove cars that crashed
+		
+		
+		for agent in temp:
+			agent_list_current.remove(agent)
+			
+		# during training, we are supposed to check for collisions
+		
+		
+		
+		self.time = self.time + 2
+		
+		
 	return
 	
 	
