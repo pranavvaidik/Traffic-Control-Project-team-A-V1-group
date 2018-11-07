@@ -221,7 +221,7 @@ class LearningAgent():
 		# Reaching destination -> +40
 		# Red Light Violation -> -50
 		# Collision -> -50
-		# Reaching Wrong Destination -> -20
+		# Reaching Wrong Destination -> -5
 		# Waiting when green light -> -5
 		# Waiting when next slot is empty -> -5
 		# Do nothing -> 0
@@ -253,6 +253,22 @@ class LearningAgent():
 		else:
 			# add what happens when close to destination (right and wrong)
 			
+			if self.location[1][1] in self.env.exit_nodes and self.location[0] == 0:
+				if self.location[1][1] == self.destination:
+					if action == 'forward':
+					
+						next_location = 'REACHED!'
+						reward = 40
+					else:
+						reward = -5
+				else:
+					# wrong destination
+					if action == 'forward':
+						next_location = 'WRONG DESTINATION'
+						reward = -5
+					else:
+						reward = -5
+			
 			
 			if self.state[1] == 'red':
 				if action == None:
@@ -261,7 +277,10 @@ class LearningAgent():
 					# red light violation, also better to remove this car from the system to make it simpler
 					reward = -50
 			else:
-				next_actions = env.next_segment(self.location[1])
+				next_actions = self.env.next_segment(self.location[1])
+				
+				
+				
 				
 				if action == None:
 					# waiting when green light
@@ -275,12 +294,22 @@ class LearningAgent():
 						
 					else:
 						next_road = next_actions[action]
-						next_location = (len(env.road_segments[next_road])-1,next_road) 
+						
+						next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
-						if distance_moved > 0:
-							reward = +1 # moving closer to destination
-						else:
-							reward = -1 # moving away from destination
+						
+						if next_road[1] in self.env.exit_nodes:
+							if next_road[1] != self.destination:
+								reward = -30 # penalty for entering the segment leading to wrong destination
+						
+						else:					
+							if distance_moved > 0:
+								reward = 1 # moving closer to destination
+							else:
+								reward = -1 # moving away from destination
+							
+						
+							
 				
 				elif action == 'left':
 					#collision with vehicle at left
@@ -291,7 +320,7 @@ class LearningAgent():
 						
 					else:
 						next_road = next_actions[action]
-						next_location = (len(env.road_segments[next_road])-1,next_road) 
+						next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
 						if distance_moved > 0:
 							reward = +1 # moving closer to destination
@@ -307,7 +336,7 @@ class LearningAgent():
 						
 					else:
 						next_road = next_actions[action]
-						next_location = (len(env.road_segments[next_road])-1,next_road) 
+						next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
 						if distance_moved > 0:
 							reward = +1 # moving closer to destination
