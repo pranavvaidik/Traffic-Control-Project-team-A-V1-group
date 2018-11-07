@@ -202,26 +202,131 @@ class LearningAgent():
 		state = self.build_state()          # Get current state
         	self.createQ(state)                 # Create 'state' in Q-table
         	action = self.choose_action(state)  # Choose an action
-        	reward = self.act(self, action) # Receive a reward
+        	reward = self.act(action) # Receive a reward
         	self.learn(state, action, reward)   # Q-learn
-		
 		
 		#move, get reward, update Q-function
 		
-		
 		return
 		
-	def act(self):
+	def act(self, action):
 		# move/ don't move, get reward, update Q-function
 		
+		# find a way to add the violations to violations counter
+		
+		####################
+		# reward key:
+		# Moving closer to the destination -> +1 
+		# Moving away from destination -> -1
+		# Reaching destination -> +40
+		# Red Light Violation -> -50
+		# Collision -> -50
+		# Reaching Wrong Destination -> -20
+		# Waiting when green light -> -5
+		# Waiting when next slot is empty -> -5
+		# Do nothing -> 0
+		################
+		
+		if not is_at_intersection:
+			
+			if action == None:
+				if self.state == (True):
+					# not moving when empty slot ahead
+					reward = -5
+				else:
+					# next slot not empty
+					reward = 0
+			else:
+				#action is to move forward
+				if self.state == (True)
+					# next slot empty and moving
+					next_location = (self.location[0]-1, self.location[1])
+					distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+					
+					if distance_moved > 0:
+						reward = +1 # moving closer to destination
+					else:
+						reward = -1 # moving away from destination
+				else:	
+					#collision with next vehicle
+					reward = -50
+		else:
+			# add what happens when close to destination (right and wrong)
+			
+			
+			if self.state[1] == 'red':
+				if action == None:
+					reward = 0
+				else:
+					# red light violation, also better to remove this car from the system to make it simpler
+					reward = -50
+			else:
+				next_actions = env.next_segment(self.location[1])
+				
+				if action == None:
+					# waiting when green light
+					reward = -5
+				elif action == 'forward':
+					#collision with vehicle in front
+					if self.state[2] == False:
+						reward = -50
+						
+						#location of car should either not change or we have to remove the car from the traffic system
+						
+					else:
+						next_road = next_actions[action]
+						next_location = (len(env.road_segments[next_road])-1,next_road) 
+						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+						if distance_moved > 0:
+							reward = +1 # moving closer to destination
+						else:
+							reward = -1 # moving away from destination
+				
+				elif action == 'left':
+					#collision with vehicle at left
+					if self.state[3] == False:
+						reward = -50
+						
+						#location of car should either not change or we have to remove the car from the traffic system
+						
+					else:
+						next_road = next_actions[action]
+						next_location = (len(env.road_segments[next_road])-1,next_road) 
+						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+						if distance_moved > 0:
+							reward = +1 # moving closer to destination
+						else:
+							reward = -1 # moving away from destination
+				
+				elif action == 'right':
+					#collision with vehicle at right
+					if self.state[4] == False:
+						reward = -50
+						
+						#location of car should either not change or we have to remove the car from the traffic system
+						
+					else:
+						next_road = next_actions[action]
+						next_location = (len(env.road_segments[next_road])-1,next_road) 
+						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+						if distance_moved > 0:
+							reward = +1 # moving closer to destination
+						else:
+							reward = -1 # moving away from destination
+			
+			
+			
+		
+		
+		
 		
 		return
 		
-	def dist_to_destination(self):
+	def dist_to_destination(self, location):
 		#calculates the l1 distance to destination from current location
-		if self.location != None and self.destination_point != None :
-			location_on_road = self.location[0]
-			next_intersection = self.location[0][1]
+		if location != None and destination_point != None :
+			location_on_road = location[0]
+			next_intersection = location[0][1]
 			
 			# get total distance
 			dist = location_on_road + 1 + np.linalg.norm(np.linalg.subtract(self.destination_point, next_intersection),1)
