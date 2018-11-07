@@ -186,8 +186,12 @@ class LearningAgent():
 		return maxQ
 	
 	
-	def learn(self):
-	
+	def learn(self, state, action, reward):
+		if self.is_learning:
+			if self.is_at_intersection:
+				self.Q_intersection[state][action] = self.Q_intersection[state][action] + self.learning_rate * (reward - self.Q_intersection[state][action])
+			else:
+				self.Q_road_segment[state][action] = self.Q_road_segment[state][action] + self.learning_rate * (reward - self.Q_road_segment[state][action])
 		return
 	
 	def createQ(self):
@@ -358,12 +362,7 @@ class LearningAgent():
 							reward = -1 # moving away from destination
 			
 			
-			
-		
-		
-		
-		
-		return
+		return reward
 		
 	def dist_to_destination(self, location):
 		#calculates the l1 distance to destination from current location
