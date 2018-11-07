@@ -14,9 +14,9 @@ class Environment():
 	
 	turn_map = dict()
 	
-	agent_list_current = []
+	smart_agent_list_current = []
 	
-	agent_list_reached = []
+	smart_agent_list_reached = []
 	
 	
 	
@@ -168,21 +168,7 @@ class Environment():
 
 		return headings
 		
-		
 	
-	
-				
-	def create_agent(self, is_learning = True, epsilon = 1, learning_rate = 1):
-		
-		#creates agents.
-		
-		if is_learning:
-			agent = LearningAgent(epsilon, learning_rate)
-		else:
-			agent = DummyAgent()
-		
-        	#self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
-        	return agent
 
 	
 	def update_traffic_lights(self):
@@ -224,7 +210,7 @@ class Environment():
 		
 		# update all vehicles
 		temp = []
-		for agent in self.agent_list_current:
+		for agent in self.smart_agent_list_current:
 			agent.update()
 			
 			# remove cars that reached exit nodes
@@ -236,7 +222,7 @@ class Environment():
 		
 		
 		for agent in temp:
-			agent_list_current.remove(agent)
+			smart_agent_list_current.remove(agent)
 			
 		# during training, we are supposed to check for collisions
 		
@@ -245,12 +231,8 @@ class Environment():
 		self.time = self.time + 2
 		
 		
-	return
-	
-	
-	def update_traffic(self):
-	
 		return
+	
 	
 	def send_traffic_info(self):
 		#join the continuous road segments and send to i-group

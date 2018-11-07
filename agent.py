@@ -2,6 +2,7 @@
 import numpy as np
 from environment import Environment
 import math
+from simulator import Simulator
 
 #creating agent class
 class LearningAgent():
@@ -20,7 +21,7 @@ class LearningAgent():
 	epsilon = 1
 	learning_rate = 1
 	
-	
+	success = False
 	
 	
 	def __init__(self, env, epsilon, learning_rate, is_learning = False):
@@ -34,9 +35,6 @@ class LearningAgent():
 		
 	
 	def reset(self, destination=None, testing=False):
-        """ The reset function is called at the beginning of each trial.
-            'testing' is set to True if testing trials are being used
-            once training trials have completed. """
 
         	# Select the destination as the new location to route to
         	self.planner.route_to(destination)
@@ -58,7 +56,7 @@ class LearningAgent():
 				t=t+1
 				self.epsilon = 1/(math.exp(a*t+c)+1)
 
-        return
+        	return
 	
 	def get_inputs(self):
 		#gets information from the environment about the traffic
@@ -284,7 +282,7 @@ class LearningAgent():
 					reward = 0
 			else:
 				#action is to move forward
-				if self.state == (True)
+				if self.state == (True):
 					# next slot empty and moving
 					next_location = (self.location[0]-1, self.location[1])
 					distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
@@ -460,13 +458,15 @@ class DummyAgent():
 	location = None   # Needs to be assigned a correct value.
 	start_point = None # np.random.choice(Environment.exit_nodes)
 	
+	
+	
 	def __init__(self, env):
 		self.Q_intersection = dict()
 		self.Q_road_segment = dict()
 		self.is_at_intersection = False
 		self.ID = None
 		self.env = env
-		
+		self.is_dummy = False
 		return
 	
 	
@@ -544,6 +544,20 @@ class DummyAgent():
 				self.is_at_intersection = True				
 		return location
 		
+
+
+def create_agent(self, is_learning = True, epsilon = 1, learning_rate = 0.5):
+		
+	#creates agents.
+	
+	if is_learning:
+		agent = LearningAgent(epsilon, learning_rate)
+	else:
+		agent = DummyAgent()
+	
+        #self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
+        return agent
+
 		
 def run():
 	
@@ -553,8 +567,14 @@ def run():
 	
 	# For training scneario
 	
-	agent = env.create_agent(is_learning=True)
+	agent = create_agent(is_learning=True)
+	agent.ID = 1
 	
+	
+	env.learning_agent_list_current.append(agent)
+	
+	
+	sim = Simulator(env)
 	
 	
 	
