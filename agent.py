@@ -293,6 +293,13 @@ class LearningAgent():
 						reward = +1 # moving closer to destination
 					else:
 						reward = -1 # moving away from destination
+					
+					# empty current slot
+					self.env.road_segment[self.location[1]][self.location[0]] = None	
+					
+					# fill next slot
+					self.location = next_location
+					self.env.road_segment[self.location[1]][self.location[0]] = self.ID
 				else:	
 					#collision with next vehicle
 					reward = -50
@@ -305,6 +312,13 @@ class LearningAgent():
 					
 						next_location = 'REACHED!'
 						reward = 40
+
+						# clear current slot
+						self.env.road_segment[self.location[1]][self.location[0]] = None						
+						# reached destination
+						self.location = self.destination
+						
+	
 					else:
 						reward = -5
 				else:
@@ -312,6 +326,12 @@ class LearningAgent():
 					if action == 'forward':
 						next_location = 'WRONG DESTINATION'
 						reward = -5
+						
+						# clear current slot
+						self.env.road_segment[self.location[1]][self.location[0]] = None						
+						# reached destination
+						self.location = self.location[1][1]
+						
 					else:
 						reward = -5
 			
@@ -354,7 +374,12 @@ class LearningAgent():
 							else:
 								reward = -1 # moving away from destination
 							
-						
+						# empty current slot
+						self.env.road_segment[self.location[1]][self.location[0]] = None	
+					
+						# fill next slot
+						self.location = next_location
+						self.env.road_segment[self.location[1]][self.location[0]] = self.ID
 							
 				
 				elif action == 'left':
@@ -368,10 +393,23 @@ class LearningAgent():
 						next_road = next_actions[action]
 						next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+						
+						if next_road[1] in self.env.exit_nodes:
+							if next_road[1] != self.destination:
+								reward = -30 # penalty for entering the segment leading to wrong destination
+						
 						if distance_moved > 0:
 							reward = +1 # moving closer to destination
 						else:
 							reward = -1 # moving away from destination
+							
+							
+						# empty current slot
+						self.env.road_segment[self.location[1]][self.location[0]] = None	
+					
+						# fill next slot
+						self.location = next_location
+						self.env.road_segment[self.location[1]][self.location[0]] = self.ID
 				
 				elif action == 'right':
 					#collision with vehicle at right
@@ -384,10 +422,22 @@ class LearningAgent():
 						next_road = next_actions[action]
 						next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+						
+						if next_road[1] in self.env.exit_nodes:
+							if next_road[1] != self.destination:
+								reward = -30 # penalty for entering the segment leading to wrong destination
+						
 						if distance_moved > 0:
 							reward = +1 # moving closer to destination
 						else:
 							reward = -1 # moving away from destination
+							
+						# empty current slot
+						self.env.road_segment[self.location[1]][self.location[0]] = None	
+					
+						# fill next slot
+						self.location = next_location
+						self.env.road_segment[self.location[1]][self.location[0]] = self.ID
 			
 			
 		return reward
@@ -492,11 +542,8 @@ class DummyAgent():
 				env.road_segments[location[1]] = new_segment
 				new_seg = location[1]
 				location = (0, new_seg)
-				self.is_at_intersection = True 
-				
+				self.is_at_intersection = True				
 		return location
-		
-	
 		
 		
 def run():
