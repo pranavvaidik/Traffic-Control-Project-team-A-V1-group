@@ -411,7 +411,7 @@ class DummyAgent():
 			else :
 				acts = []
 				for acs in ['forward', 'right', 'left'] :
-					if inputs[acs] == True
+					if inputs[acs] == True :  
 						acts.append(acs)
 						
 				only_action = np.random.choice(acts)		
@@ -427,9 +427,33 @@ class DummyAgent():
 		
 	
 	def act(self):
-		# move/ don't move, get reward, update Q-function
-		
-		return
+		# update location if move, otherwise make relevant changes
+		action = self.choose_action()
+		if action != None :
+			if (location[0] - 1) != 0:
+				new_segment = [None] * len(env.road_segments[location[1]])
+				new_segment[location[0] + 1] = self.ID 
+				env.road_segments[location[1]] = new_segment
+				new_loc = location[0] - 1
+				new_seg = location[1]
+				location = (new_loc, new_seg)
+			elif location[0] == 0 :
+				segments = env.next_segemnt(location[1])
+				new_seg = segments[action]
+				new_segment = [None] * len(env.road_segments[new_seg])
+				new_segment[0] = self.ID 
+				env.road_segments[new_seg] = new_segment
+				location = (30, new_seg)
+				self.is_at_intersection = False
+			elif (location[0] - 1) == 0 :
+				new_segment = [None] * len(env.road_segments[location[1]])
+				new_segment[location[0] + 1] = self.ID 
+				env.road_segments[location[1]] = new_segment
+				new_seg = location[1]
+				location = (0, new_seg)
+				self.is_at_intersection = True 
+				
+		return location
 		
 	
 		
