@@ -62,7 +62,7 @@ class Simulator():
 	                    		break
 	
 	
-	            	self.env.reset(testing)
+	            	self.env.reset()
 	            	self.current_time = 0.0
 	            	self.last_updated = 0.0
 	            	self.start_time = time.time()

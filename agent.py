@@ -12,7 +12,7 @@ class LearningAgent():
 	
 	time_taken = 0
 	start_point = None
-	destination_point = None
+	destination = None
 	
 	test_mode = False
 	
@@ -36,9 +36,6 @@ class LearningAgent():
 	
 	def reset(self, destination=None, testing=False):
 
-        	# Select the destination as the new location to route to
-        	self.planner.route_to(destination)
-        
         	# Update epsilon using a decay function
         	# Update additional class parameters as needed
         	# If 'testing' is True, set epsilon and alpha to 0
@@ -152,7 +149,7 @@ class LearningAgent():
 			
 		else:
 			#check if next slot is empty; state will be of the form: {next_slot_empty: True/False}
-			if self.env.road_segments[location[1]][location[0] - 1] == None:
+			if self.env.road_segments[self.location[1]][self.location[0] - 1] == None:
 				state = (True)  #{'next_slot_empty':True}
 			else:
 				state = (False) #{'next_slot_empty':False}
@@ -576,7 +573,7 @@ def run():
 	
 	sim = Simulator(env)
 	
-	
+	sim.run(tolerance = 0.05, n_test = 50)
 	
 	
 	

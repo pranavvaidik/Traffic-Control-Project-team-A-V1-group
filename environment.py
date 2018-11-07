@@ -169,7 +169,22 @@ class Environment():
 		return headings
 		
 	
-
+	
+	def reset(self):
+		# clear all roads
+		self.__init__()
+		
+		# clear all starting, current and end locations of agents
+		for agent in self.smart_agent_list_current:
+			agent.location = None
+			agent.destination = None
+			agent.start_point = None
+		
+		for agent in self.smart_agent_list_reached:
+			agent.location = None
+			agent.destination = None
+			agent.start_point = None
+		
 	
 	def update_traffic_lights(self):
 		for loc in self.nodes:
