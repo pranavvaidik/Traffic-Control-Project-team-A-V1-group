@@ -277,7 +277,7 @@ class DummyAgent():
 			else :
 				acts = []
 				for acs in ['forward', 'right', 'left'] :
-					if inputs[acs] == True
+					if inputs[acs] == True :  
 						acts.append(acs)
 						
 				only_action = np.random.choice(acts)		
