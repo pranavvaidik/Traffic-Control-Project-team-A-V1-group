@@ -546,12 +546,12 @@ class DummyAgent():
 		
 
 
-def create_agent(self, is_learning = True, epsilon = 1, learning_rate = 0.5):
+def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5):
 		
 	#creates agents.
 	
 	if is_learning:
-		agent = LearningAgent(epsilon, learning_rate)
+		agent = LearningAgent(env, epsilon, learning_rate, is_learning)
 	else:
 		agent = DummyAgent()
 	
@@ -567,11 +567,11 @@ def run():
 	
 	# For training scneario
 	
-	agent = create_agent(is_learning=True)
+	agent = create_agent(env,is_learning=True)
 	agent.ID = 1
 	
 	
-	env.learning_agent_list_current.append(agent)
+	env.smart_agent_list_current.append(agent)
 	
 	
 	sim = Simulator(env)
