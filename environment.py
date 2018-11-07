@@ -125,6 +125,9 @@ class Environment():
 		else:
 			next_segments = self.next_segment(location[1])
 			actions = next_segments.keys()
+			
+			if len(actions) == 0:
+				actions.append('forward')
 		
 		return actions
 	
@@ -176,17 +179,31 @@ class Environment():
 		
 		# clear all starting, current and end locations of agents
 		for agent in self.smart_agent_list_current:
+			print "NOT REACHED"
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
+			agent.state = None
 			self.smart_agent_list_start.append(agent)
 		
 		self.smart_agent_list_current = []
 		
 		for agent in self.smart_agent_list_reached:
+			
+			if agent.location == agent.destination:
+				print agent.location
+				print agent.destination
+				print "SUCCESS"
+			else:
+				print agent.location
+				print agent.destination
+				
+				print "FAILED"
+			
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
+			agent.state = None
 			self.smart_agent_list_start.append(agent)
 			
 		self.smart_agent_list_reached = []
@@ -234,18 +251,18 @@ class Environment():
 		for agent in self.smart_agent_list_current:
 			agent.update()
 			
-			print("Agent", agent.ID, "is at ", agent.location)
+			#print("Agent", agent.ID, "is at ", agent.location)
 			
 			# remove cars that reached exit nodes
-			if agent.location[1][1] in self.exit_nodes:
+			if agent.location in self.exit_nodes:
 				temp.append(agent)
-				agent_list_reached.append(agent)
+				self.smart_agent_list_reached.append(agent)
 				
 			# also remove cars that crashed
 		
 		
 		for agent in temp:
-			smart_agent_list_current.remove(agent)
+			self.smart_agent_list_current.remove(agent)
 			
 		# during training, we are supposed to check for collisions
 		

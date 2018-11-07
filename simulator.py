@@ -5,7 +5,7 @@ import numpy as np
 class Simulator():
 	
 	
-	def __init__(self,env, update_delay=0.05, display=True):
+	def __init__(self,env, update_delay=0.0001, display=True):
 		
 		self.env = env
 		self.update_delay = update_delay
@@ -37,32 +37,32 @@ class Simulator():
 
 	        while True:
 	
-			
+			self.env.reset()
 	
 	            # Flip testing switch
 	            	if not testing:
-	            
-	            	
 	                	if total_trials > 20: # Must complete minimum 20 training trials
-				                    
+				        
+	                    		a = self.env.smart_agent_list_start[0]
+	                    		
 	                    
-	                    
-	                    
-	                    		if a.learning:
+	                    		if a.is_learning:
 	                        		if a.epsilon < tolerance: # assumes epsilon decays to 0
 	                            			testing = True
 	                            			trial = 1
 	                    		else:
 	                        		testing = True
 	                        		trial = 1
-	                        
+	                        if total_trials > 60:
+	                        	testing = True
+	                        	trial = 1
 	            	# Break if we've reached the limit of testing trials
 	            	else:
 	                	if trial > n_test:
 	                    		break
 	
 	
-	            	self.env.reset()
+	            	
 	            	
 	            	# for each agent in env, set the start, destination and current location points
 	            	
@@ -101,7 +101,7 @@ class Simulator():
 	                    	if self.current_time - self.last_updated >= self.update_delay:
 	                        	
 	                        	if len(self.env.smart_agent_list_start) > 0:
-	                        		send_flag = np.random.choice([True,False]) # will change the distribution later
+	                        		send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
 	                        		
 	                        		if send_flag:
 	                        			new_agent = self.env.smart_agent_list_start.pop()
@@ -139,7 +139,9 @@ class Simulator():
 	
 	            	
 	            	print("Trial number", trial)
-
+			
+			if testing:
+				print "TESTING"
 	            	# Trial finished
 #	        	if self.env.success == True:
 #	                	print "\nTrial Completed!"

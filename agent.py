@@ -216,7 +216,7 @@ class LearningAgent():
 			
 			
 			if self.is_at_intersection:
-				print self.Q_intersection[state], state, action 
+				#print self.Q_intersection[state], state, action 
 				self.Q_intersection[state][action] = self.Q_intersection[state][action] + self.learning_rate * (reward - self.Q_intersection[state][action])
 			else:
 				self.Q_road_segment[state][action] = self.Q_road_segment[state][action] + self.learning_rate * (reward - self.Q_road_segment[state][action])
@@ -237,7 +237,7 @@ class LearningAgent():
 		
 		if self.is_at_intersection:
 			
-			print state
+			#print state
 			if state not in self.Q_intersection.keys():
 				
 				valid_actions = self.env.valid_actions(self.location)
@@ -336,6 +336,9 @@ class LearningAgent():
 					if action == 'forward':
 					
 						next_location = 'REACHED!'
+						
+						
+						
 						reward = 40
 
 						# clear current slot
@@ -350,6 +353,9 @@ class LearningAgent():
 					# wrong destination
 					if action == 'forward':
 						next_location = 'WRONG DESTINATION'
+						
+						print "WRONG DESTINATION"
+						
 						reward = -5
 						
 						# clear current slot
@@ -357,118 +363,120 @@ class LearningAgent():
 						# reached destination
 						self.location = self.location[1][1]
 						
+						
 					else:
 						reward = -5
 			
-			
-			if self.state[1] == 'red':
-				if action == None:
-					reward = 0
-				else:
-					# red light violation, also better to remove this car from the system to make it simpler
-					reward = -50
 			else:
-				next_actions = self.env.next_segment(self.location[1])
-				
-				if action == None:
-					# waiting when green light
-					reward = -5
-				elif action == 'forward':
-					#collision with vehicle in front
-					if self.state[2] == False:
-						reward = -50
-						
-						#location of car should either not change or we have to remove the car from the traffic system
-						
+				if self.state[1] == 'red':
+					if action == None:
+						reward = 0
 					else:
-						next_road = next_actions[action]
-						
-						next_location = (len(self.env.road_segments[next_road])-1,next_road) 
-						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
-						
-						if next_road[1] in self.env.exit_nodes:
-							if next_road[1] != self.destination:
+						# red light violation, also better to remove this car from the system to make it simpler
+						reward = -50
+				else:
+					next_actions = self.env.next_segment(self.location[1])
+					
+					if action == None:
+						# waiting when green light
+						reward = -5
+					elif action == 'forward':
+						#collision with vehicle in front
+						if self.state[2] == False:
+							reward = -50
+							
+							#location of car should either not change or we have to remove the car from the traffic system
+							
+						else:
+							next_road = next_actions[action]
+							
+							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
+							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+							
+							if next_road[1] in self.env.exit_nodes and next_road[1] != self.destination:
+								#if next_road[1] != self.destination:
 								reward = -30 # penalty for entering the segment leading to wrong destination
 						
-						else:					
+							
+							else:					
+								if distance_moved > 0:
+									reward = 1 # moving closer to destination
+								else:
+									reward = -1 # moving away from destination
+								
+							# empty current slot
+							self.env.road_segments[self.location[1]][self.location[0]] = None	
+						
+							# fill next slot
+							self.location = next_location
+							
+							#self.is_at_intersection = False
+							self.env.road_segments[self.location[1]][self.location[0]] = self.ID
+								
+					
+					elif action == 'left':
+						#collision with vehicle at left
+						if self.state[3] == False:
+							reward = -50
+							
+							#location of car should either not change or we have to remove the car from the traffic system
+							
+						else:
+							next_road = next_actions[action]
+							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
+							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+							
+							if next_road[1] in self.env.exit_nodes:
+								if next_road[1] != self.destination:
+									reward = -30 # penalty for entering the segment leading to wrong destination
+							
 							if distance_moved > 0:
-								reward = 1 # moving closer to destination
+								reward = +1 # moving closer to destination
 							else:
 								reward = -1 # moving away from destination
+								
+								
+							# empty current slot
+							self.env.road_segments[self.location[1]][self.location[0]] = None	
+						
+							# fill next slot
+							self.location = next_location
 							
-						# empty current slot
-						self.env.road_segments[self.location[1]][self.location[0]] = None	
+							#self.is_at_intersection = False
+							self.env.road_segments[self.location[1]][self.location[0]] = self.ID
+							
 					
-						# fill next slot
-						self.location = next_location
-						
-						#self.is_at_intersection = False
-						self.env.road_segments[self.location[1]][self.location[0]] = self.ID
+					elif action == 'right':
+						#collision with vehicle at right
+						if self.state[4] == False:
+							reward = -50
 							
-				
-				elif action == 'left':
-					#collision with vehicle at left
-					if self.state[3] == False:
-						reward = -50
-						
-						#location of car should either not change or we have to remove the car from the traffic system
-						
-					else:
-						next_road = next_actions[action]
-						next_location = (len(self.env.road_segments[next_road])-1,next_road) 
-						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
-						
-						if next_road[1] in self.env.exit_nodes:
-							if next_road[1] != self.destination:
-								reward = -30 # penalty for entering the segment leading to wrong destination
-						
-						if distance_moved > 0:
-							reward = +1 # moving closer to destination
+							#location of car should either not change or we have to remove the car from the traffic system
+							
 						else:
-							reward = -1 # moving away from destination
+							next_road = next_actions[action]
+							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
+							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
 							
+							if next_road[1] in self.env.exit_nodes:
+								if next_road[1] != self.destination:
+									reward = -30 # penalty for entering the segment leading to wrong destination
 							
-						# empty current slot
-						self.env.road_segments[self.location[1]][self.location[0]] = None	
-					
-						# fill next slot
-						self.location = next_location
+							if distance_moved > 0:
+								reward = +1 # moving closer to destination
+							else:
+								reward = -1 # moving away from destination
+								
+							# empty current slot
+							self.env.road_segments[self.location[1]][self.location[0]] = None	
 						
-						#self.is_at_intersection = False
-						self.env.road_segments[self.location[1]][self.location[0]] = self.ID
-						
+							# fill next slot
+							self.location = next_location
+							
+							#self.is_at_intersection = False
+							self.env.road_segments[self.location[1]][self.location[0]] = self.ID
 				
-				elif action == 'right':
-					#collision with vehicle at right
-					if self.state[4] == False:
-						reward = -50
-						
-						#location of car should either not change or we have to remove the car from the traffic system
-						
-					else:
-						next_road = next_actions[action]
-						next_location = (len(self.env.road_segments[next_road])-1,next_road) 
-						distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
-						
-						if next_road[1] in self.env.exit_nodes:
-							if next_road[1] != self.destination:
-								reward = -30 # penalty for entering the segment leading to wrong destination
-						
-						if distance_moved > 0:
-							reward = +1 # moving closer to destination
-						else:
-							reward = -1 # moving away from destination
-							
-						# empty current slot
-						self.env.road_segments[self.location[1]][self.location[0]] = None	
-					
-						# fill next slot
-						self.location = next_location
-						
-						#self.is_at_intersection = False
-						self.env.road_segments[self.location[1]][self.location[0]] = self.ID
-			
-			
+				
 		return reward
 		
 	def dist_to_destination(self, location):
@@ -607,7 +615,7 @@ def run():
 	
 	sim = Simulator(env)
 	
-	sim.run(tolerance = 0.05, n_test = 50)
+	sim.run(tolerance = 0.2, n_test = 50)
 	
 	
 	
