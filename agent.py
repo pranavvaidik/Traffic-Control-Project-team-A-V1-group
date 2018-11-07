@@ -36,7 +36,12 @@ class LearningAgent():
 		#gets information from the environment about the traffic
 		#gets information from the i-groups about the lights
 		
-		lights = env.traffic_lights[self.location[1]]
+		
+		if self.location[1][1] in exit_nodes:
+			# always move forward when on the lane to exit node
+			return {'light':'green', 'forward' : True, 'left' : None, 'right' : None}
+		else:
+			lights = env.traffic_lights[self.location[1]]
 		
 		heading = env.headings([location[1]])[0]
 		
@@ -58,6 +63,10 @@ class LearningAgent():
 		
 		current_road = self.location[1]
 		current_intersection = current_road[1]
+		
+		if current_intersection in self.env.exit_nodes:
+			return 'forward'
+		
 		
 		diff = np.subtract(self.destination, current_intersection)
 		
@@ -131,6 +140,11 @@ class LearningAgent():
 		if self.is_at_intersection:
 			# left, right, straight, or None
 			valid_actions_list = self.env.valid_actions(self.location)
+			
+			if not valid_actions_list:
+				# if this list is empty, the road is a dead end, meaning an exit node
+				valid_actions_list.append('forward')
+				
 			valid_actions_list.append(None)
 			
 			if not is_learning:
