@@ -32,6 +32,7 @@ class LearningAgent():
 		self.is_at_intersection = False
 		self.ID = None
 		self.env = env
+		self.is_learning = is_learning
 		
 	
 	def reset(self, destination=None, testing=False):
@@ -60,25 +61,25 @@ class LearningAgent():
 		#gets information from the i-groups about the lights
 		
 		
-		if self.location[1][1] in exit_nodes:
+		if self.location[1][1] in self.env.exit_nodes:
 			# always move forward when on the lane to exit node
 			return {'light':'green', 'forward' : True, 'left' : None, 'right' : None}
 		else:
-			lights = env.traffic_lights[self.location[1]]
+			lights = self.env.traffic_lights[self.location[1][1]]
 		
-		heading = env.headings([location[1]])[0]
+		heading = self.env.headings([self.location[1]])[0]
 		
 		if lights == heading:
 			inputs = {'light':'green', 'forward' : None, 'left' : None, 'right' : None}
 		else:
 			inputs = {'light':'red', 'forward' : None, 'left' : None, 'right' : None}
 		
-		next_actions = env.next_segment(location[1])
+		next_actions = self.env.next_segment(self.location[1])
 		
 		for action in next_actions.keys():
 			#will tell if slot is empty for each valid turn. True means slot is empty, false is when there is a vehicle present.
-			inputs[action] = (next_actions[action][-1] == None)
-		
+			inputs[action] = (self.env.road_segments[next_actions[action]][-1] == None)
+			
 		return inputs
 		
 	def next_waypoint(self):
@@ -107,11 +108,11 @@ class LearningAgent():
 			directions_to_destination.append('WEST')
 		
 		#possible actions at next intersection
-		valid_actions = env.next_segment(current_road)
+		valid_actions = self.env.next_segment(current_road)
 		
 		# get roads and actions that match the directions to the destination point
 		
-		next_road_headings = env.headings(valid_actions.values())
+		next_road_headings = self.env.headings(valid_actions.values())
 		
 		best_action_dirs = list(set(directions_to_destination) & set(next_road_headings))
 		
@@ -149,14 +150,15 @@ class LearningAgent():
 			
 		else:
 			#check if next slot is empty; state will be of the form: {next_slot_empty: True/False}
+			
 			if self.env.road_segments[self.location[1]][self.location[0] - 1] == None:
-				state = (True)  #{'next_slot_empty':True}
+				self.state = (True)  #{'next_slot_empty':True}
 			else:
-				state = (False) #{'next_slot_empty':False}
+				self.state = (False) #{'next_slot_empty':False}
 			
 			#return dictonary or flag value
 			
-		return
+		return 
 		
 	def choose_action(self, state):
 		
@@ -170,7 +172,7 @@ class LearningAgent():
 				
 			valid_actions_list.append(None)
 			
-			if not is_learning:
+			if not self.is_learning:
 				action = np.random.choice(valid_actions_list)
 			else:
 				is_random = np.random.choice([True,False], p = [self.epsilon, 1-self.epsilon])
@@ -185,7 +187,7 @@ class LearningAgent():
 			# move forward or None
 			valid_actions_list = ['forward',None]
 			
-			if not is_learning:
+			if not self.is_learning:
 				action = np.random.choice(valid_actions_list)
 			else:
 				is_random = np.random.choice([True,False], p = [self.epsilon, 1-self.epsilon])
@@ -211,40 +213,62 @@ class LearningAgent():
 	
 	def learn(self, state, action, reward):
 		if self.is_learning:
+			
+			
 			if self.is_at_intersection:
+				print self.Q_intersection[state], state, action 
 				self.Q_intersection[state][action] = self.Q_intersection[state][action] + self.learning_rate * (reward - self.Q_intersection[state][action])
 			else:
 				self.Q_road_segment[state][action] = self.Q_road_segment[state][action] + self.learning_rate * (reward - self.Q_road_segment[state][action])
+				
+		
+		
+		if self.location[0] == 0:
+			self.is_at_intersection = True
+		else:		
+			self.is_at_intersection = False
+			
 		return
 	
-	def createQ(self):
+	def createQ(self,state):
 		
 		# if state is in the Q-function, add state in dictionary
 		
+		
 		if self.is_at_intersection:
+			
+			print state
 			if state not in self.Q_intersection.keys():
+				
 				valid_actions = self.env.valid_actions(self.location)
 				
 				self.Q_intersection[state] = dict()
 				
 				for action in valid_actions:
 					self.Q_intersection[state][action] = 0.0
-					
+				self.Q_intersection[state][None] = 0.0
+				
+			#print Q_intersection
+						
 		else:
 			if state not in self.Q_road_segment.keys():	
 				self.Q_road_segment[state] = dict()
 				self.Q_road_segment[state][None] = 0.0
 				self.Q_road_segment[state]['forward'] = 0.0
 		
+		
 		return
 	
 	def update(self):
 		#called at the end of each time instance. when called, it builds the state, add the state to the Q-function, choose action, act and get reward, and learn and update its Q-function
-		state = self.build_state()          # Get current state
-        	self.createQ(state)                 # Create 'state' in Q-table
-        	action = self.choose_action(state)  # Choose an action
+		self.build_state()          # Get current state
+		
+        	self.createQ(self.state)                 # Create 'state' in Q-table
+        	action = self.choose_action(self.state)  # Choose an action
         	reward = self.act(action) # Receive a reward
-        	self.learn(state, action, reward)   # Q-learn
+        	self.learn(self.state, action, reward)   # Q-learn
+		
+		
 		
 		#move, get reward, update Q-function
 		
@@ -268,7 +292,10 @@ class LearningAgent():
 		# Do nothing -> 0
 		################
 		
-		if not is_at_intersection:
+		
+		#print("action is", action, 'state is', self.state)
+		
+		if not self.is_at_intersection:
 			
 			if action == None:
 				if self.state == (True):
@@ -290,11 +317,14 @@ class LearningAgent():
 						reward = -1 # moving away from destination
 					
 					# empty current slot
-					self.env.road_segment[self.location[1]][self.location[0]] = None	
+					self.env.road_segments[self.location[1]][self.location[0]] = None	
 					
 					# fill next slot
 					self.location = next_location
-					self.env.road_segment[self.location[1]][self.location[0]] = self.ID
+					
+					
+					
+					self.env.road_segments[self.location[1]][self.location[0]] = self.ID
 				else:	
 					#collision with next vehicle
 					reward = -50
@@ -309,7 +339,7 @@ class LearningAgent():
 						reward = 40
 
 						# clear current slot
-						self.env.road_segment[self.location[1]][self.location[0]] = None						
+						self.env.road_segments[self.location[1]][self.location[0]] = None						
 						# reached destination
 						self.location = self.destination
 						
@@ -323,7 +353,7 @@ class LearningAgent():
 						reward = -5
 						
 						# clear current slot
-						self.env.road_segment[self.location[1]][self.location[0]] = None						
+						self.env.road_segments[self.location[1]][self.location[0]] = None						
 						# reached destination
 						self.location = self.location[1][1]
 						
@@ -339,9 +369,6 @@ class LearningAgent():
 					reward = -50
 			else:
 				next_actions = self.env.next_segment(self.location[1])
-				
-				
-				
 				
 				if action == None:
 					# waiting when green light
@@ -370,11 +397,13 @@ class LearningAgent():
 								reward = -1 # moving away from destination
 							
 						# empty current slot
-						self.env.road_segment[self.location[1]][self.location[0]] = None	
+						self.env.road_segments[self.location[1]][self.location[0]] = None	
 					
 						# fill next slot
 						self.location = next_location
-						self.env.road_segment[self.location[1]][self.location[0]] = self.ID
+						
+						#self.is_at_intersection = False
+						self.env.road_segments[self.location[1]][self.location[0]] = self.ID
 							
 				
 				elif action == 'left':
@@ -400,11 +429,14 @@ class LearningAgent():
 							
 							
 						# empty current slot
-						self.env.road_segment[self.location[1]][self.location[0]] = None	
+						self.env.road_segments[self.location[1]][self.location[0]] = None	
 					
 						# fill next slot
 						self.location = next_location
-						self.env.road_segment[self.location[1]][self.location[0]] = self.ID
+						
+						#self.is_at_intersection = False
+						self.env.road_segments[self.location[1]][self.location[0]] = self.ID
+						
 				
 				elif action == 'right':
 					#collision with vehicle at right
@@ -428,23 +460,25 @@ class LearningAgent():
 							reward = -1 # moving away from destination
 							
 						# empty current slot
-						self.env.road_segment[self.location[1]][self.location[0]] = None	
+						self.env.road_segments[self.location[1]][self.location[0]] = None	
 					
 						# fill next slot
 						self.location = next_location
-						self.env.road_segment[self.location[1]][self.location[0]] = self.ID
+						
+						#self.is_at_intersection = False
+						self.env.road_segments[self.location[1]][self.location[0]] = self.ID
 			
 			
 		return reward
 		
 	def dist_to_destination(self, location):
 		#calculates the l1 distance to destination from current location
-		if location != None and destination_point != None :
+		if location != None and self.destination != None :
 			location_on_road = location[0]
-			next_intersection = location[0][1]
+			next_intersection = location[1][1]
 			
 			# get total distance
-			dist = location_on_road + 1 + np.linalg.norm(np.linalg.subtract(self.destination_point, next_intersection),1)
+			dist = location_on_road + 1 + np.linalg.norm(np.subtract(self.destination, next_intersection),1)
 		return dist
 	
 	

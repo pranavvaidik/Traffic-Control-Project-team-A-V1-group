@@ -1,11 +1,11 @@
 import sys, pygame
 import time
-
+import numpy as np
 
 class Simulator():
 	
 	
-	def __init__(self,env, update_delay=2.0, display=True):
+	def __init__(self,env, update_delay=0.05, display=True):
 		
 		self.env = env
 		self.update_delay = update_delay
@@ -63,6 +63,27 @@ class Simulator():
 	
 	
 	            	self.env.reset()
+	            	
+	            	# for each agent in env, set the start, destination and current location points
+	            	
+	            	for agent in self.env.smart_agent_list_start:
+	            		
+	            		choice = np.random.choice(len(self.env.exit_nodes))
+	            		agent.start_point = self.env.exit_nodes[choice]
+	            		
+	            		
+	            		if agent.start_point == (62,65):
+	            			 agent.destination = (0,-3)
+	            		elif agent.start_point == (0,-3):
+	            			 agent.destination = (62,65)
+	            		elif agent.start_point == (-3,62):
+	            			 agent.destination = (65,0)
+	            		elif agent.start_point == (65,0):
+	            			 agent.destination = (-3,62)
+	            		
+	            		
+	            	
+	            	
 	            	self.current_time = 0.0
 	            	self.last_updated = 0.0
 	            	self.start_time = time.time()
@@ -78,6 +99,20 @@ class Simulator():
 	                    
 	                    	# Update environment
 	                    	if self.current_time - self.last_updated >= self.update_delay:
+	                        	
+	                        	if len(self.env.smart_agent_list_start) > 0:
+	                        		send_flag = np.random.choice([True,False]) # will change the distribution later
+	                        		
+	                        		if send_flag:
+	                        			new_agent = self.env.smart_agent_list_start.pop()
+	                        			current_road = [item for item in self.env.road_segments.keys() if item[0] == new_agent.start_point]
+	                        			
+	                        			location_on_road = len(self.env.road_segments[current_road[0]])-1
+	                        			new_agent.location = (location_on_road, current_road[0])
+	                        			self.env.smart_agent_list_current.append(new_agent)
+	                        		
+	                        		
+	                        	
 	                        	self.env.step()
 	                        	self.last_updated = self.current_time
 	                    		
@@ -102,15 +137,16 @@ class Simulator():
 	            	#if self.quit:
 	                #	break
 	
-	            
+	            	
+	            	print("Trial number", trial)
 
 	            	# Trial finished
-	        	if self.env.success == True:
-	                	print "\nTrial Completed!"
-	                	print "Agent reached the destination."
-	            	else:
-	                	print "\nTrial Aborted!"
-	                	print "Agent did not reach the destination."
+#	        	if self.env.success == True:
+#	                	print "\nTrial Completed!"
+#	                	print "Agent reached the destination."
+#	            	else:
+#	                	print "\nTrial Aborted!"
+#	                	print "Agent did not reach the destination."
 	
 	            	# Increment
 	            	total_trials = total_trials + 1

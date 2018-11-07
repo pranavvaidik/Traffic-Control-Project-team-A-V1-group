@@ -18,7 +18,7 @@ class Environment():
 	
 	smart_agent_list_reached = []
 	
-	
+	smart_agent_list_start = []
 	
 	for key in ['NORTH','SOUTH','EAST','WEST']:
 		turn_map[key] = dict()
@@ -179,11 +179,17 @@ class Environment():
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
+			self.smart_agent_list_start.append(agent)
+		
+		self.smart_agent_list_current = []
 		
 		for agent in self.smart_agent_list_reached:
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
+			self.smart_agent_list_start.append(agent)
+			
+		self.smart_agent_list_reached = []
 		
 	
 	def update_traffic_lights(self):
@@ -227,6 +233,8 @@ class Environment():
 		temp = []
 		for agent in self.smart_agent_list_current:
 			agent.update()
+			
+			print("Agent", agent.ID, "is at ", agent.location)
 			
 			# remove cars that reached exit nodes
 			if agent.location[1][1] in self.exit_nodes:
