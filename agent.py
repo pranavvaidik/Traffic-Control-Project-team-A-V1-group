@@ -337,7 +337,7 @@ class LearningAgent():
 					
 						next_location = 'REACHED!'
 						
-						
+						self.success = True
 						
 						reward = 40
 

@@ -4,6 +4,24 @@ import numpy as np
 
 class Simulator():
 	
+	# car colors for identification
+	colors = {
+        'black'   : (  0,   0,   0),
+        'white'   : (255, 255, 255),
+        'red'     : (255,   0,   0),
+        'green'   : (  0, 255,   0),
+        'dgreen'  : (  0, 228,   0),
+        'blue'    : (  0,   0, 255),
+        'cyan'    : (  0, 200, 200),
+        'magenta' : (200,   0, 200),
+        'yellow'  : (255, 255,   0),
+        'mustard' : (200, 200,   0),
+        'orange'  : (255, 128,   0),
+        'maroon'  : (200,   0,   0),
+        'crimson' : (128,   0,   0),
+        'gray'    : (155, 155, 155)
+    }
+	
 	
 	def __init__(self,env, update_delay=0.0001, display=True):
 		
@@ -19,6 +37,41 @@ class Simulator():
 		
 		# This is for simulation purposes, not to be touched yet
 		self.display = display
+		
+		
+		if self.display:
+            	try:
+            		self.pygame = importlib.import_module('pygame')
+        	        self.pygame.init()
+        	        self.screen = self.pygame.display.set_mode(self.size)
+        	        #self._logo = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "logo.png")), (self.road_width, self.road_width))
+	
+        	        self._ew = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "east-west.png")), (self.road_width, self.road_width))
+        	        self._ns = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "north-south.png")), (self.road_width, self.road_width))
+	
+        	        self.frame_delay = max(1, int(self.update_delay * 1000))  # delay between GUI frames in ms (min: 1)
+        	        self.agent_sprite_size = (32, 32)
+        	        self.primary_agent_sprite_size = (42, 42)
+        	        self.agent_circle_radius = 20  # radius of circle, when using simple representation
+        	        """for agent in self.env.agent_states:
+        	            if agent.color == 'white':
+        	                agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.primary_agent_sprite_size)
+        	            else:
+        	                agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
+        	            agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())"""
+	
+        	        self.font = self.pygame.font.Font(None, 20)
+        	        self.paused = False
+       		except ImportError as e:
+        	        self.display = False
+        	        print "Simulator.__init__(): Unable to import pygame; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+   		except Exception as e:
+   		        self.display = False
+        		print "Simulator.__init__(): Error initializing GUI objects; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+
+		
+		
+		
 		
 		return
 		
@@ -116,7 +169,7 @@ class Simulator():
 	                        	self.env.step()
 	                        	self.last_updated = self.current_time
 	                    		
-	                    		if len(self.env.smart_agent_list_current) == 0:
+	                    		if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:
 	                    			# learning agent reached some destination or had an accident
 	                    			break
 	                    	
