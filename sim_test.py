@@ -46,6 +46,66 @@ bounds = (5,10,69,69)
 
 
 
+
+# nodes and road segments
+nodes = [(62,65), (-3,62), (0,62), (31,62), (62,62), (0,31), (31,31), (62,31), (0,0), (31,0), (62,0), (65,0), (0,-3)]
+
+
+road_segments = dict()
+		
+#initializing the entry/exit road segments
+road_segments[((-3,62),(0,62))] = [None]*2
+road_segments[((0,62),(-3,62))] = [None]*2
+
+road_segments[((62,65),(62,62))] = [None]*2
+road_segments[((62,62),(62,65))] = [None]*2
+		
+road_segments[((62,0),(65,0))] = [None]*2
+road_segments[((65,0),(62,0))] = [None]*2
+
+road_segments[((0,0),(0,-3))] = [None]*2
+road_segments[((0,-3),(0,0))] = [None]*2
+		
+#initializing the rest of the road segments
+road_segments[((0,62),(31,62))] = [None]*30	
+road_segments[((31,62),(0,62))] = [None]*30
+		
+road_segments[((62,62),(31,62))] = [None]*30	
+road_segments[((31,62),(62,62))] = [None]*30
+
+road_segments[((0,62),(0,31))] = [None]*30	
+road_segments[((0,31),(0,62))] = [None]*30
+		
+road_segments[((31,31),(31,62))] = [None]*30	
+road_segments[((31,62),(31,31))] = [None]*30
+		
+road_segments[((62,62),(62,31))] = [None]*30	
+road_segments[((62,31),(62,62))] = [None]*30
+		
+road_segments[((0,31),(31,31))] = [None]*30	
+road_segments[((31,31),(0,31))] = [None]*30
+		
+road_segments[((31,31),(62,31))] = [None]*30	
+road_segments[((62,31),(31,31))] = [None]*30
+		
+road_segments[((0,31),(0,0))] = [None]*30	
+road_segments[((0,0),(0,31))] = [None]*30
+		
+road_segments[((31,31),(31,0))] = [None]*30	
+road_segments[((31,0),(31,31))] = [None]*30
+		
+road_segments[((62,0),(62,31))] = [None]*30	
+road_segments[((62,31),(62,0))] = [None]*30
+		
+road_segments[((31,0),(0,0))] = [None]*30	
+road_segments[((0,0),(31,0))] = [None]*30
+		
+road_segments[((31,0),(62,0))] = [None]*30	
+road_segments[((62,0),(31,0))] = [None]*30
+
+
+
+
 while not done:
 	
 	# Reset the screen.
@@ -93,5 +153,17 @@ while not done:
         
         pygame.display.flip()
 
+
+
+def coordinate_transform(point_tuple):
+	# takes in coordinate in the road coordinates and converts them to pygame version
+	
+	
+	transformed_x = point_tuple[0] + 3
+	
+	
+	transformed_y = 68 -3 - point_tuple[1]
+	
+	return (transformed_x, transformed_y)	
 
 
