@@ -31,18 +31,18 @@ block_size = 20
 n_blocks = (69,69)
 
 #size = (900,900)
-size = ((n_blocks[0] + 20 )* block_size, (n_blocks[1]+20)*block_size)
+size = ((n_blocks[0] + 15 )* block_size, (n_blocks[1]+15)*block_size)
 screen = pygame.display.set_mode(size)
 done = False
 
 bg_color = colors['gray']
 boundary_color = colors['black']
 road_color = colors['black']
-road_width = 44
+road_width = 20
 
 
 
-bounds = (5,15,69,69)
+bounds = (5,10,69,69)
 
 
 
@@ -61,9 +61,23 @@ while not done:
         
         # TODO: convert the rect boundaries to a math term dependent on parameters from env 
         pygame.draw.rect(screen, boundary_color, ( bounds[0]*block_size, bounds[1]*block_size, bounds[2]*block_size, bounds[3]*block_size), 4)
-        pygame.draw.line(screen, road_color, (bounds[1]*block_size, (bounds[0]+2)*block_size), ((bounds[1] + bounds[3] - 2)*block_size, (bounds[0]+2)*block_size), block_size) # replace 4th argument with road_width
         
-        pygame.draw.rect(screen, boundary_color, ( bounds[0]*block_size, bounds[1]*block_size, block_size, block_size), 4)
+        #pygame.draw.line(screen, road_color, ( bounds[1]*block_size, (bounds[0]+2)*block_size), ((bounds[1] + bounds[3] - 2)*block_size, (bounds[0]+2)*block_size), block_size) # replace 4th argument with road_width
+        
+        
+        pygame.draw.line(screen, road_color,  ( bounds[0]*block_size, (bounds[1]+4)*block_size ) , ( (bounds[0] + bounds[2] - 3)*block_size , (bounds[1] + 4)*block_size ), road_width )
+        pygame.draw.line(screen, colors['white'], ( bounds[0]*block_size, (bounds[1]+4)*block_size ) , ( (bounds[0] + bounds[2] - 3)*block_size , (bounds[1] + 4)*block_size ), 1)
+        
+        pygame.draw.line(screen, road_color,  ( (bounds[0] + bounds[3] - 3)*block_size , bounds[1]*block_size ) , ( (bounds[0] + bounds[3] - 3)*block_size , (bounds[1] + bounds[3] - 3 )*block_size ), road_width )
+        pygame.draw.line(screen, colors['white'], ( (bounds[0] + bounds[3] - 3)*block_size , bounds[1]*block_size ) , ( (bounds[0] + bounds[3] - 3)*block_size , (bounds[1] + bounds[3] - 3 )*block_size ), 1)
+        
+        
+        
+        
+        #pygame.draw.rect(screen, boundary_color, ( bounds[0]*block_size, bounds[1]*block_size, block_size, block_size), 4)
+        
+        
+        
         
         
         pygame.draw.line(screen, colors['white'], (50, 100), (50, 100), 1) # points are given as (column, row), with (0,0) at the top left
