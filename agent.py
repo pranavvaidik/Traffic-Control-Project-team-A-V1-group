@@ -539,20 +539,20 @@ class DummyAgent():
 				only_action = None
 			else :
 				next_actions = self.env.valid_actions(self.location[1])
+				valid_actions = [None]
 				for acts in next_actions.keys():
 					
 					# check which of the next segments have empty slots and append that action from the valid actions
-					x=1
 					#then, choose one of the actions randomply
 					
-					# valid_action = 
-					
-						
+					if next_actions[acts][0] == None : 
+						valid_actions.append(acts)
+							
 				only_action = np.random.choice(valid_actions)		
 		else:
 			# move forward or None
-			current_road = env.road_segments[location[1]]
-			if current_road[location[0] + 1] == None :
+			current_road = self.env.road_segments[self.location[1]]
+			if current_road[self.location[0] - 1] == None :
 				only_action = 'forward'
 			else :
 				only_action = None
