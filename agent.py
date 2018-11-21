@@ -10,6 +10,8 @@ class LearningAgent():
 	
 	location = None  #will be a tuple; first entry will be its location on the segment, second entry will be a tuple that describes the segment
 	
+	is_smart = True
+	
 	time_taken = 0
 	start_point = None
 	destination = None
@@ -496,7 +498,7 @@ class DummyAgent():
 	
 	location = None   # Needs to be assigned a correct value.
 	start_point = None # np.random.choice(Environment.exit_nodes)
-	
+	is_smart = False
 	
 	
 	def __init__(self, env):
