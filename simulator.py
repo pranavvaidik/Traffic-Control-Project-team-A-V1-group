@@ -1,10 +1,16 @@
-import sys, pygame
+import pygame
+import os
 import time
+import random
+import importlib
+import csv
 import numpy as np
+import sys
+
 
 class Simulator():
 	
-	# car colors for identification
+	# colors for identification
 	colors = {
         'black'   : (  0,   0,   0),
         'white'   : (255, 255, 255),
@@ -22,12 +28,29 @@ class Simulator():
         'gray'    : (155, 155, 155)
     }
 	
+	car_colors = {
+       	'white'   : (255, 255, 255),
+       	'red'     : (255,   0,   0),
+       	'green'   : (  0, 255,   0),
+       	'blue'    : (  0,   0, 255),
+       	'cyan'    : (  0, 200, 200),
+       	'magenta' : (200,   0, 200),
+       	'yellow'  : (255, 255,   0),
+       	'orange'  : (255, 128,   0),
+            }
+            
 	
 	def __init__(self,env, update_delay=0.0001, display=True):
 		
 		self.env = env
 		self.update_delay = update_delay
 		
+		
+		self.bg_color = colors['gray']
+		self.boundary_color = colors['black']
+		self.road_color = colors['black']
+		self.road_width = 20
+
 		
 		self.quit = False
         	self.start_time = None
@@ -45,11 +68,15 @@ class Simulator():
         		        self.pygame.init()
         		        self.screen = self.pygame.display.set_mode(self.size)
 				
+				self.block_size = self.env.block_size
+				
+				self.dir_img_size=(self.block_size,self.block_size)
+				
 				self.direction_images={
-						'North':pygame.transform.smoothscale(pygame.image.load('images/North.png'),dir_img_size),
-						'South':pygame.transform.smoothscale(pygame.image.load('images/South.png'),dir_img_size),
-						'East':pygame.transform.smoothscale(pygame.image.load('images/East.png'),dir_img_size),
-						'West':pygame.transform.smoothscale(pygame.image.load('images/West.png'),dir_img_size)
+						'North':self.pygame.transform.smoothscale(pygame.image.load('images/North.png'),self.dir_img_size),
+						'South':self.pygame.transform.smoothscale(pygame.image.load('images/South.png'),self.dir_img_size),
+						'East':self.pygame.transform.smoothscale(pygame.image.load('images/East.png'),self.dir_img_size),
+						'West':self.pygame.transform.smoothscale(pygame.image.load('images/West.png'),self.dir_img_size)
 						}
 				
 				
@@ -57,7 +84,7 @@ class Simulator():
         		        #self._ns = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "north-south.png")), (self.road_width, self.road_width))
 		
         		        self.frame_delay = max(1, int(self.update_delay * 1000))  # delay between GUI frames in ms (min: 1)
-        		        self.agent_sprite_size = (32, 32)
+        		        self.agent_sprite_size = (self.block_size, self.block_size)
         		        #self.primary_agent_sprite_size = (42, 42)
         		        
         		        #self.agent_circle_radius = 20  # radius of circle, when using simple representation
@@ -79,6 +106,128 @@ class Simulator():
 		
 		
 		return
+	
+	
+	def set_traffic_lights(self,traffic_lights):
+
+		i=-1 #index iterating over traffic nodes
+		for l in traffic_lights:#yet to define variable traffic_lights, would be receiving from I team	
+			for direction in l:
+				i+=1
+				if direction==None:
+					#print('No green light')
+					center = coordinate_transform(traffic_nodes[i])
+			        	pygame.draw.circle(self.screen, self.colors['red'], center, self.block_size/2, 0)
+					continue
+				elif direction[:1].upper()=='N': #if North
+					direction_image=direction_images['North']				
+				elif direction[:1].upper()=='E': #if East
+					direction_image=direction_images['East']
+				elif direction[:1].upper()=='W': #if West
+					direction_image=direction_images['West']
+				elif direction[:1].upper()=='S': #if South
+					direction_image=direction_images['South']
+				else:
+					raise Exception('Invalid direction')
+					
+				
+				screen.blit(direction_image, coordinate_transform(  tuple(np.array(traffic_nodes[i]) - np.array([0.5,-0.5]))  )) ##need to transform traffic_nodes[i]        
+	return
+	
+	
+	def coordinate_transform(self, point_tuple):
+		# takes in coordinate in the road coordinates and converts them to pygame version
+		transformed_x = (self.bounds[0] + point_tuple[0] + 3 + 0.5)*self.block_size
+		transformed_y = (self.bounds[1] + self.bounds[3] -3 - point_tuple[1] - 0.5)*self.block_size
+		return (int(transformed_x), int(transformed_y))
+
+
+	def place_vehicle(self,agent):
+		# takes in the location of the car and gives out the location on the UI
+		slot = agent.location[0]
+		road_segment = agent.location[1]
+	
+		# get the direction of movement of the vehicle
+		direction = np.subtract(road_segment[1],road_segment[0])
+		length = np.linalg.norm(direction)
+	
+		car_location = coordinate_transform(tuple(np.array(road_segment[0]) - np.array([0.5,-0.5]) + (slot + 1) * (direction/length)  + np.flip(direction/length) * (0.25 if direction[0] == 0 else -0.25) ))
+	
+		if hasattr(agent, '_sprite'):
+			rotated_sprite = agent._sprite if tuple(direction/length) == (1,0) else pygame.transform.rotate(agent._sprite, 180 if tuple(direction/length) == (-1,0)  else tuple(direction/length)[1]*90 )
+		
+		return car_location, rotated_sprite
+	
+	
+	
+	def render(self, screen):
+	
+		# Reset the screen.
+	        screen.fill(self.bg_color)
+        
+        
+        
+        	# Draw elements
+        	# * Static elements
+
+	
+        
+        	# TODO: convert the rect boundaries to a math term dependent on parameters from env 
+        	pygame.draw.rect(screen, boundary_color, ( bounds[0]*block_size, bounds[1]*block_size, bounds[2]*block_size, bounds[3]*block_size), 4)
+        
+        
+        	# iteration over roads to draw the roads and separation lines
+        	for road in unique_roads:
+        
+        		# transforming road points
+        		road_start = coordinate_transform(road[0])
+        		road_end = coordinate_transform(road[1])
+        	
+        		# drawing the roads 
+        		pygame.draw.line(screen, road_color, road_start, road_end, road_width)
+        		
+        		# drawing the separation lines
+        		pygame.draw.line(screen, colors['white'], road_start, road_end, 1)
+        	
+        	# Highlight the traffic nodes with yellow circles
+        	
+        	for node in traffic_nodes:
+        		center = coordinate_transform(node)
+        		pygame.draw.circle(screen, colors['yellow'], center, block_size/2, 0)
+        	
+        	# Highlight the exit nodes with green circles
+        	for node in exit_nodes:
+        		center = coordinate_transform(node)
+        		pygame.draw.circle(screen, colors['green'], center, block_size/2, 0)
+        		
+        	# Add traffic light directions on the map
+        	set_traffic_lights(traffic_lights)
+        	
+		# Add Dynamic elements from here on
+		
+		
+		for agent in agent_list:
+			car_location, rotated_sprite = place_vehicle(agent)
+			screen.blit(rotated_sprite, car_location)
+		
+		
+		
+		# everything in the loop should be in the render function, which is called in a while loop at every time instance
+        	for event in pygame.event.get():
+        	        if event.type == pygame.QUIT:
+        	                done = True
+		
+		
+		#pygame.time.delay(500)	
+		
+		#step()
+		
+		        
+        	pygame.display.flip()
+	
+	
+		return
+	
 		
 		
 	def run(self, tolerance=0.05, n_test=0):
