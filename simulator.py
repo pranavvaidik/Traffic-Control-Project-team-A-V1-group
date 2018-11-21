@@ -40,7 +40,7 @@ class Simulator():
             }
             
 	
-	def __init__(self,env, update_delay=0.0001, display=True):
+	def __init__(self,env, update_delay=0.5, display=True):
 		
 		self.env = env
 		
@@ -73,48 +73,56 @@ class Simulator():
 		
 		
 		if self.display:
-	            	try:
-        	    		self.pygame = importlib.import_module('pygame')
-        		        self.pygame.init()
-        		        self.size = ((self.env.n_blocks[0] + 15 )* self.env.block_size, (self.env.n_blocks[1]+15)*self.env.block_size)
-        		        self.screen = self.pygame.display.set_mode(self.size)
+	            	#try:
+        	    	self.pygame = importlib.import_module('pygame')
+        		self.pygame.init()
+        	        self.size = ((self.env.n_blocks[0] + 15 )* self.env.block_size, (self.env.n_blocks[1]+15)*self.env.block_size)
+        	        self.screen = self.pygame.display.set_mode(self.size)
+			
+			self.block_size = self.env.block_size
+			
+			self.dir_img_size=(self.block_size,self.block_size)
 				
-				self.block_size = self.env.block_size
-				
-				self.dir_img_size=(self.block_size,self.block_size)
-				
-				self.direction_images={
-						'NORTH':self.pygame.transform.smoothscale(pygame.image.load('images/North.png'),self.dir_img_size),
-						'SOUTH':self.pygame.transform.smoothscale(pygame.image.load('images/South.png'),self.dir_img_size),
-						'EAST':self.pygame.transform.smoothscale(pygame.image.load('images/East.png'),self.dir_img_size),
-						'WEST':self.pygame.transform.smoothscale(pygame.image.load('images/West.png'),self.dir_img_size)
-						}
+			self.direction_images={
+					'NORTH':self.pygame.transform.smoothscale(pygame.image.load('images/North.png'),self.dir_img_size),
+					'SOUTH':self.pygame.transform.smoothscale(pygame.image.load('images/South.png'),self.dir_img_size),
+					'EAST':self.pygame.transform.smoothscale(pygame.image.load('images/East.png'),self.dir_img_size),
+					'WEST':self.pygame.transform.smoothscale(pygame.image.load('images/West.png'),self.dir_img_size)
+					}
 				
 				
-        		        #self._ew = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "east-west.png")), (self.road_width, self.road_width))
-        		        #self._ns = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "north-south.png")), (self.road_width, self.road_width))
+        	        #self._ew = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "east-west.png")), (self.road_width, self.road_width))
+        	        #self._ns = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "north-south.png")), (self.road_width, self.road_width))
 		
-        		        self.frame_delay = max(1, int(self.update_delay * 1000))  # delay between GUI frames in ms (min: 1)
-        		        self.agent_sprite_size = (self.block_size, self.block_size)
-        		        #self.primary_agent_sprite_size = (42, 42)
+        	        self.frame_delay = max(1, int(self.update_delay * 1000))  # delay between GUI frames in ms (min: 1)
+        	        self.agent_sprite_size = (self.block_size, self.block_size)
+        	        #self.primary_agent_sprite_size = (42, 42)
         		        
-        		        #self.agent_circle_radius = 20  # radius of circle, when using simple representation
+        	        #self.agent_circle_radius = 20  # radius of circle, when using simple representation
         		        
-
+			print "agent list is ", len(self.env.agent_list_start), " long"
         		        
-        		        for agent in self.env.agent_list_start:
-        		        	agent.color = random.choice(self.env.car_colors.keys())
-        		            	agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
-        		            	agent._sprite_size = (agent._sprite.get_width(_), agent._sprite.get_height())
-		
-        		        self.font = self.pygame.font.Font(None, 20)
-        		        self.paused = False
-       			except ImportError as e:
-        		        self.display = False
-        		        print "Simulator.__init__(): Unable to import pygame; display disabled.\n{}: {}".format(e.__class__.__name__, e)
-   			except Exception as e:
-   			        self.display = False
-        			print "Simulator.__init__(): Error initializing GUI objects; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+        	        for agent in self.env.smart_agent_list_start:
+        	        	agent.color = random.choice(self.env.car_colors.keys())
+        	            	agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
+        	            	agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
+        	            	print "this was run atleast once"
+			
+        	        for agent in self.env.dummy_agent_list_start:
+        	        	agent.color = random.choice(self.env.car_colors.keys())
+        	            	agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
+        	            	agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
+        	            	print "this was run atleast once"
+						
+			
+        	        self.font = self.pygame.font.Font(None, 20)
+        	        self.paused = False
+       		#	except ImportError as e:
+        	#	        self.display = False
+        	#	        print "Simulator.__init__(): Unable to import pygame; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+   		#	except Exception as e:
+   		#	        self.display = False
+        	#		print "Simulator.__init__(): Error initializing GUI objects; display disabled.\n{}: {}".format(e.__class__.__name__, e)
 
 		
 		
@@ -183,6 +191,8 @@ class Simulator():
 		if hasattr(agent, '_sprite'):
 			rotated_sprite = agent._sprite if tuple(direction/length) == (1,0) else pygame.transform.rotate(agent._sprite, 180 if tuple(direction/length) == (-1,0)  else tuple(direction/length)[1]*90 )
 			print "Good till here"
+		else:
+			print "Shimatta!"
 		
 		return car_location, rotated_sprite
 	
@@ -330,7 +340,7 @@ class Simulator():
 	
 	                    	# Handle GUI events
 	                    
-	                    
+	                    	
 	                    
 	                    	# Update environment
 	                    	if self.current_time - self.last_updated >= self.update_delay:

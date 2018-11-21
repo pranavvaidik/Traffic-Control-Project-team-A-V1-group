@@ -632,6 +632,10 @@ def run():
 	
 	sim = Simulator(env)
 	
+	print "yep!"
+	print len(env.smart_agent_list_start)
+	print hasattr(agent, '_sprite')
+	
 	sim.run(tolerance = 0.2, n_test = 50)
 	
 	

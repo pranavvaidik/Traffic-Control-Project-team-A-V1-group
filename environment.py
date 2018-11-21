@@ -26,9 +26,9 @@ class Environment():
 	
 	smart_agent_list_start = []
 	
-	#agent_list_current = smart_agent_list_current + dummy_agent_list_current
+	agent_list_current = smart_agent_list_current + dummy_agent_list_current
 	
-	#agent_list_start = smart_agent_list_start + dummy_agent_list_start
+	agent_list_start = smart_agent_list_start + dummy_agent_list_start
 	
 	for key in ['NORTH','SOUTH','EAST','WEST']:
 		turn_map[key] = dict()
