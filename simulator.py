@@ -179,20 +179,19 @@ class Simulator():
 
 	def place_vehicle(self,agent):
 		# takes in the location of the car and gives out the location on the UI
-		slot = agent.location[0]
+		
 		road_segment = agent.location[1]
-	
+		slot = len(self.env.road_segments[road_segment]) - agent.location[0]
+		
+		
 		# get the direction of movement of the vehicle
 		direction = np.subtract(road_segment[1],road_segment[0])
 		length = np.linalg.norm(direction)
 	
-		car_location = self.coordinate_transform(tuple(np.array(road_segment[0]) - np.array([0.5,-0.5]) + (slot + 1) * (direction/length)  + np.flip(direction/length) * (0.25 if direction[0] == 0 else -0.25) ))
+		car_location = self.coordinate_transform(tuple(np.array(road_segment[0]) - np.array([0.5,-0.5]) + (slot ) * (direction/length)  + np.flip(direction/length) * (0.25 if direction[0] == 0 else -0.25) ))
 	
 		if hasattr(agent, '_sprite'):
 			rotated_sprite = agent._sprite if tuple(direction/length) == (1,0) else pygame.transform.rotate(agent._sprite, 180 if tuple(direction/length) == (-1,0)  else tuple(direction/length)[1]*90 )
-			print "Good till here"
-		else:
-			print "Shimatta!"
 		
 		return car_location, rotated_sprite
 	
