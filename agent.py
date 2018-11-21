@@ -552,7 +552,7 @@ class DummyAgent():
 		else:
 			# move forward or None
 			current_road = self.env.road_segments[self.location[1]]
-			if current_road[self.location[0] - 1] == None :
+			if current_road[len(current_road) - self.location[0] + 1] == None :
 				only_action = 'forward'
 			else :
 				only_action = None
@@ -562,35 +562,38 @@ class DummyAgent():
 	
 	def act(self):
 		# update location and is_at_intersection flag after taking relevant action
-		action = self.choose_action()
-		if action != None :
-			if (location[0] - 1) != 0:
-				env.road_segments[location[0] + 1] = self.ID 
-				env.road_segments[location[0]] = None
-				new_loc = location[0] - 1
-				new_seg = location[1]
-				location = (new_loc, new_seg)
-			elif location[0] == 0 :
-				env.road_segments[location[0]] = None
-				segments = env.next_segemnt(location[1])
-				new_seg = segments[action]
-				new_segment = env.road_segments[new_seg]
-				new_segment[0] = self.ID 
-				env.road_segments[new_seg] = new_segment
-				location = (30, new_seg)
-				self.is_at_intersection = False
-			elif (location[0] - 1) == 0 :
-				env.road_segments[location[0] + 1] = self.ID 
-				env.road_segments[location[0]] = None 
-				new_seg = location[1]
-				location = (0, new_seg)
-				self.is_at_intersection = True
-				
-				
-				
-							
-		return location
+		if ( self.location[1][1] in self.env.exit_nodes ) and ( self.location[0] == 0 ) :
+			self.location = None
+			self.ID = None
+			
+			return
+		else :
+			action = self.choose_action()
+			if action != None :
+				if (self.location[0] - 1) != 0:
+					self.env.road_segments[len(self.env.road_segments) - self.location[0] + 1] = self.ID 
+					self.env.road_segments[len(self.env.road_segments) - self.location[0]] = None
+					new_loc = self.location[0] - 1
+					new_seg = self.location[1]
+					self.location = (new_loc, new_seg)
+				elif self.location[0] == 0 :
+					self.env.road_segments[len(self.env.road_segments) - self.location[0]] = None
+					segments = self.env.next_segemnt(self.location[1])
+					new_seg = segments[action]
+					new_segment = self.env.road_segments[new_seg]
+					new_segment[0] = self.ID 
+					self.env.road_segments[new_seg] = new_segment
+					self.location = (len(new_segment), new_seg)
+					self.is_at_intersection = False
+				elif (self.location[0] - 1) == 0 :
+					self.env.road_segments[len(self.env.road_segments) - self.location[0] + 1] = self.ID 
+					self.env.road_segments[len(self.env.road_segments) - self.location[0]] = None 
+					new_seg = self.location[1]
+					self.location = (0, new_seg)
+					self.is_at_intersection = True					
+			return 
 		
+	
 	def update(self):
 		# called at the end of each time instance. when called, it builds the state, add the state to the Q-function, choose action, act and get reward, and learn and update its Q-function
 		
