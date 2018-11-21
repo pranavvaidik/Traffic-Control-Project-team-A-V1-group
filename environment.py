@@ -265,6 +265,8 @@ class Environment():
 	
 	def step(self):
 		
+		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
+		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
 		
 		
 		
@@ -289,14 +291,24 @@ class Environment():
 		
 		for agent in temp:
 			self.smart_agent_list_current.remove(agent)
+		
+		
+		for agent in self.dummy_agent_list_current:
+			agent.update()
+		
+			if agent.location in self.exit_nodes:
+				temp.append(agent)
+				self.dummy_agent_list_start.append(agent)
 			
+		for agent in temp:
+			self.dummy_agent_list_current.remove(agent)
+		
+		
 		# during training, we are supposed to check for collisions
 		
 		
 		
-		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
-		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
-		
+
 		
 		self.time = self.time + 2
 		

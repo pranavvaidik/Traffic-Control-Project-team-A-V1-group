@@ -106,7 +106,6 @@ class Simulator():
         	        	agent.color = random.choice(self.env.car_colors.keys())
         	            	agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
         	            	agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
-        	            	print "this was run atleast once"
 			
         	        for agent in self.env.dummy_agent_list_start:
         	        	agent.color = random.choice(self.env.car_colors.keys())
@@ -279,7 +278,7 @@ class Simulator():
 	        testing = False
 	        trial = 1
 
-	        while True:
+	        while not self.quit:
 	
 			self.env.reset()
 	
@@ -373,6 +372,16 @@ class Simulator():
 	                        	self.render()
 	                        	self.pygame.time.wait(self.frame_delay)
 	
+	
+				for event in pygame.event.get():
+                			if event.type == pygame.QUIT:
+                        			self.quit = True
+                        		
+				
+				if self.quit:
+					break
+				
+				
 		                #except KeyboardInterrupt:
 	                    	#	self.quit = True
 	                	#finally:
