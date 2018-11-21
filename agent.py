@@ -260,7 +260,7 @@ class LearningAgent():
 		return
 	
 	def update(self):
-		#called at the end of each time instance. when called, it builds the state, add the state to the Q-function, choose action, act and get reward, and learn and update its Q-function
+		# called at the end of each time instance. when called, it builds the state, add the state to the Q-function, choose action, act and get reward, and learn and update its Q-function
 		self.build_state()          # Get current state
 		
         	self.createQ(self.state)                 # Create 'state' in Q-table
@@ -500,12 +500,9 @@ class DummyAgent():
 	
 	
 	def __init__(self, env):
-		self.Q_intersection = dict()
-		self.Q_road_segment = dict()
 		self.is_at_intersection = False
 		self.ID = None
 		self.env = env
-		self.is_dummy = False
 		return
 	
 	
@@ -515,14 +512,14 @@ class DummyAgent():
 		
 		lights = env.traffic_lights[self.location[1]]
 		
-		heading = env.headings([location[1]])[0]
+		heading = env.headings([self.location[1]])[0]
 		
 		if lights == heading:
 			inputs = {'light':'green'}
 		else:
 			inputs = {'light':'red'}
 		
-		next_actions = env.next_segment(location[1])
+		next_actions = self.env.next_segment(self.location[1])
 		
 		for action in next_actions.keys():
 			#will tell if slot is empty for each valid turn. True means slot is empty, false is when there is a vehicle present.
@@ -539,12 +536,17 @@ class DummyAgent():
 			if inputs['light'] == 'red' :
 				only_action = None
 			else :
-				acts = []
-				for acs in ['forward', 'right', 'left'] :
-					if inputs[acs] == True :  
-						acts.append(acs)
+				next_actions = self.env.valid_actions(self.location[1])
+				for acts in next_actions.keys():
+					
+					# check which of the next segments have empty slots and append that action from the valid actions
+					
+					#then, choose one of the actions randomply
+					
+					# valid_action = 
+					
 						
-				only_action = np.random.choice(acts)		
+				only_action = np.random.choice(valid_actions)		
 		else:
 			# move forward or None
 			current_road = env.road_segments[location[1]]
@@ -580,10 +582,25 @@ class DummyAgent():
 				env.road_segments[location[0]] = None 
 				new_seg = location[1]
 				location = (0, new_seg)
-				self.is_at_intersection = True				
+				self.is_at_intersection = True
+				
+				
+				
+							
 		return location
 		
-
+	def update(self):
+		# called at the end of each time instance. when called, it builds the state, add the state to the Q-function, choose action, act and get reward, and learn and update its Q-function
+		
+		# choose action
+		
+		action = self.choose_action(self.state)  # Choose an action
+        	
+        	
+        	# take action self.act()
+        	
+		
+		return
 
 def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5):
 		

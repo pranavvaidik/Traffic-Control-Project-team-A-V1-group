@@ -16,9 +16,15 @@ class Environment():
 	
 	smart_agent_list_current = []
 	
+	dummy_agent_list_current = []
+	
+	dummy_agent_list_start = []
+	
 	smart_agent_list_reached = []
 	
 	smart_agent_list_start = []
+	
+	agent_list_current = smart_agent_list_current + dummy_agent_list_current
 	
 	for key in ['NORTH','SOUTH','EAST','WEST']:
 		turn_map[key] = dict()
@@ -41,7 +47,16 @@ class Environment():
 	# directions of vehicles arriving at an intersection
 	directions_to_loc = dict()
 	
-	
+	car_colors = {
+        		'white'   : (255, 255, 255),
+        		'red'     : (255,   0,   0),
+        		'green'   : (  0, 255,   0),
+        		'blue'    : (  0,   0, 255),
+        		'cyan'    : (  0, 200, 200),
+        		'magenta' : (200,   0, 200),
+        		'yellow'  : (255, 255,   0),
+        		'orange'  : (255, 128,   0),
+        		}
 	
 	
 	
@@ -53,6 +68,13 @@ class Environment():
 		
 		# set time to zero
 		self.time = 0
+		
+		
+		# set initializations for UI
+		self.block_size = 20
+		self.n_blocks = (69,69)
+		
+		
 		
 		self.road_segments = dict()
 		
@@ -268,7 +290,7 @@ class Environment():
 		
 		
 		
-		
+		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
 		
 		self.time = self.time + 2
 		
