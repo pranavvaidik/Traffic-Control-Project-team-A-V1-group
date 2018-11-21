@@ -540,7 +540,7 @@ class DummyAgent():
 				for acts in next_actions.keys():
 					
 					# check which of the next segments have empty slots and append that action from the valid actions
-					
+					x=1
 					#then, choose one of the actions randomply
 					
 					# valid_action = 
@@ -627,7 +627,7 @@ def run():
 	agent.ID = 1
 	
 	
-	env.smart_agent_list_current.append(agent)
+	env.smart_agent_list_start.append(agent)
 	
 	
 	sim = Simulator(env)

@@ -8,6 +8,8 @@ class Environment():
 	
 	exit_nodes = [(62,65),(-3,62),(0,-3),(65,0)]
 	
+	traffic_nodes=[(0,0), (31,0), (62,0),(0,31),(31,31),(62,31),(0,62),(31,62),(62,62)]
+	
 	random_lights = True
 	
 	traffic_lights = dict()
@@ -24,7 +26,9 @@ class Environment():
 	
 	smart_agent_list_start = []
 	
-	agent_list_current = smart_agent_list_current + dummy_agent_list_current
+	#agent_list_current = smart_agent_list_current + dummy_agent_list_current
+	
+	#agent_list_start = smart_agent_list_start + dummy_agent_list_start
 	
 	for key in ['NORTH','SOUTH','EAST','WEST']:
 		turn_map[key] = dict()
@@ -238,7 +242,7 @@ class Environment():
                 		#choose the signal randomly from legal directions
 				self.traffic_lights[loc] = np.random.choice(self.directions_to_loc[loc])
        
-   		return self.traffic_lights	
+   		return
 	
 	
 	def congestion_at_intersection(self, intersection):
@@ -291,6 +295,8 @@ class Environment():
 		
 		
 		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
+		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
+		
 		
 		self.time = self.time + 2
 		
