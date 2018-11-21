@@ -554,7 +554,7 @@ class DummyAgent():
 		else:
 			# move forward or None
 			current_road = self.env.road_segments[self.location[1]]
-			if current_road[len(current_road) - self.location[0] + 1] == None :
+			if current_road[len(current_road) - self.location[0]] == None :
 				only_action = 'forward'
 			else :
 				only_action = None
@@ -573,8 +573,8 @@ class DummyAgent():
 			action = self.choose_action()
 			if action != None :
 				if (self.location[0] - 1) != 0:
-					self.env.road_segments[len(self.env.road_segments) - self.location[0] + 1] = self.ID 
-					self.env.road_segments[len(self.env.road_segments) - self.location[0]] = None
+					self.env.road_segments[len(self.env.road_segments) - self.location[0] ] = self.ID 
+					self.env.road_segments[len(self.env.road_segments) - self.location[0] - 1] = None
 					new_loc = self.location[0] - 1
 					new_seg = self.location[1]
 					self.location = (new_loc, new_seg)
@@ -585,7 +585,7 @@ class DummyAgent():
 					new_segment = self.env.road_segments[new_seg]
 					new_segment[0] = self.ID 
 					self.env.road_segments[new_seg] = new_segment
-					self.location = (len(new_segment), new_seg)
+					self.location = (len(new_segment)-1, new_seg)
 					self.is_at_intersection = False
 				elif (self.location[0] - 1) == 0 :
 					self.env.road_segments[-1] = self.ID 
