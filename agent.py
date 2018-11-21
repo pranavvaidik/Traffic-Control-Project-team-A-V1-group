@@ -623,7 +623,7 @@ def run():
 	
 	# For training scneario
 	
-	agent = create_agent(env,is_learning=True)
+	agent = create_agent(env,is_learning=False)
 	agent.ID = 1
 	
 	

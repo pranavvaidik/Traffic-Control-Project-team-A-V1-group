@@ -288,7 +288,6 @@ class Simulator():
 				        
 	                    		a = self.env.smart_agent_list_start[0]
 	                    		
-	                    
 	                    		if a.is_learning:
 	                        		if a.epsilon < tolerance: # assumes epsilon decays to 0
 	                            			testing = True
@@ -296,9 +295,10 @@ class Simulator():
 	                    		else:
 	                        		testing = True
 	                        		trial = 1
-	                        if total_trials > 60:
-	                        	testing = True
-	                        	trial = 1
+	                        #if total_trials > 60:
+	                        #	testing = True
+	                        #	trial = 1
+	                        
 	            	# Break if we've reached the limit of testing trials
 	            	else:
 	                	if trial > n_test:
