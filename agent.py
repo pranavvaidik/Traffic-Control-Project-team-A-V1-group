@@ -511,15 +511,18 @@ class DummyAgent():
 	def get_inputs(self):
 		#gets information from the environment about the traffic
 		#gets information from the i-groups about the lights
+		if self.location[1][1] in self.env.exit_nodes:
+			# always move forward when on the lane to exit node
+			return {'light':'green', 'forward' : True, 'left' : None, 'right' : None}
+		else:
+			lights = self.env.traffic_lights[self.location[1][1]]
 		
-		lights = env.traffic_lights[self.location[1]]
-		
-		heading = env.headings([self.location[1]])[0]
+		heading = self.env.headings([self.location[1]])[0]
 		
 		if lights == heading:
-			inputs = {'light':'green'}
+			inputs = {'light':'green', 'forward' : None, 'left' : None, 'right' : None}
 		else:
-			inputs = {'light':'red'}
+			inputs = {'light':'red', 'forward' : None, 'left' : None, 'right' : None}
 		
 		next_actions = self.env.next_segment(self.location[1])
 		
@@ -528,7 +531,6 @@ class DummyAgent():
 			inputs[action] = (next_actions[action][-1] == None)
 		
 		return inputs
-		
 	
 	def choose_action(self):
 		# This function chooses an action from all possible actions based on its location
