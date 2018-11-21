@@ -264,13 +264,10 @@ class LearningAgent():
 	def update(self):
 		# called at the end of each time instance. when called, it builds the state, add the state to the Q-function, choose action, act and get reward, and learn and update its Q-function
 		self.build_state()          # Get current state
-		
-        	self.createQ(self.state)                 # Create 'state' in Q-table
-        	action = self.choose_action(self.state)  # Choose an action
-        	reward = self.act(action) # Receive a reward
-        	self.learn(self.state, action, reward)   # Q-learn
-		
-		
+		self.createQ(self.state)                 # Create 'state' in Q-table
+        action = self.choose_action(self.state)  # Choose an action
+        reward = self.act(action) # Receive a reward
+        self.learn(self.state, action, reward)   # Q-learn
 		
 		#move, get reward, update Q-function
 		
@@ -595,16 +592,8 @@ class DummyAgent():
 		
 	
 	def update(self):
-		# called at the end of each time instance. when called, it builds the state, add the state to the Q-function, choose action, act and get reward, and learn and update its Q-function
-		
-		# choose action
-		
-		action = self.choose_action(self.state)  # Choose an action
-        	
-        	
-        	# take action self.act()
-        	
-		
+		# called at the end of each time instance
+		self.act()
 		return
 
 def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5):
