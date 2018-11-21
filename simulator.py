@@ -40,7 +40,7 @@ class Simulator():
             }
             
 	
-	def __init__(self,env, update_delay=0.5, display=True):
+	def __init__(self,env, update_delay=0.15, display=True):
 		
 		self.env = env
 		

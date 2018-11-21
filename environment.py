@@ -276,32 +276,24 @@ class Environment():
 		
 		# update all vehicles
 		temp = []
-		for agent in self.smart_agent_list_current:
+		
+		for agent in self.agent_list_current:
 			agent.update()
-			
-			#print("Agent", agent.ID, "is at ", agent.location)
-			
-			# remove cars that reached exit nodes
+		
 			if agent.location in self.exit_nodes:
 				temp.append(agent)
-				self.smart_agent_list_reached.append(agent)
+				if agent.is_smart:
+					self.smart_agent_list_reached.append(agent)
+					self.smart_agent_list_current.remove(agent)
+				else:
+					self.dummy_agent_list_start.append(agent)
+					self.dummy_agent_list_current.remove(agent)
 				
+					
+		
 			# also remove cars that crashed
 		
 		
-		for agent in temp:
-			self.smart_agent_list_current.remove(agent)
-		
-		
-		for agent in self.dummy_agent_list_current:
-			agent.update()
-		
-			if agent.location in self.exit_nodes:
-				temp.append(agent)
-				self.dummy_agent_list_start.append(agent)
-			
-		for agent in temp:
-			self.dummy_agent_list_current.remove(agent)
 		
 		
 		# during training, we are supposed to check for collisions
