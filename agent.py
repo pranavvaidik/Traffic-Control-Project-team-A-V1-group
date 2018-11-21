@@ -609,7 +609,7 @@ def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5):
 	if is_learning:
 		agent = LearningAgent(env, epsilon, learning_rate, is_learning)
 	else:
-		agent = DummyAgent()
+		agent = DummyAgent(env)
 	
         #self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
         return agent
@@ -623,18 +623,23 @@ def run():
 	
 	# For training scneario
 	
-	agent = create_agent(env,is_learning=False)
-	agent.ID = 1
+	smart_agent = create_agent(env,is_learning=True)
+	smart_agent.ID = 1
 	
 	
-	env.smart_agent_list_start.append(agent)
+	dummy_agent = create_agent(env,is_learning=False)
+	dummy_agent.ID = 1
+	
+	
+	env.smart_agent_list_start.append(smart_agent)
+	env.dummy_agent_list_start.append(dummy_agent)
 	
 	
 	sim = Simulator(env)
 	
 	print "yep!"
 	print len(env.smart_agent_list_start)
-	print hasattr(agent, '_sprite')
+	print hasattr(smart_agent, '_sprite')
 	
 	sim.run(tolerance = 0.2, n_test = 50)
 	
