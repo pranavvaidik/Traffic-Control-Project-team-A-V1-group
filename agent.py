@@ -588,8 +588,8 @@ class DummyAgent():
 					self.location = (len(new_segment)-1, new_seg)
 					self.is_at_intersection = False
 				elif (self.location[0] - 1) == 0 :
-					self.env.road_segments[-1] = self.ID 
-					self.env.road_segments[-2] = None 
+					self.env.road_segments[self.location[1]][-1] = self.ID 
+					self.env.road_segments[self.location[1]][-2] = None 
 					new_seg = self.location[1]
 					self.location = (0, new_seg)
 					self.is_at_intersection = True					
