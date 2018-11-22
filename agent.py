@@ -540,7 +540,7 @@ class DummyAgent():
 			if inputs['light'] == 'red' :
 				only_action = None
 			else :
-				next_actions = self.env.valid_actions(self.location[1])
+				next_actions = self.env.new_segment(self.location[1])
 				valid_actions = [None]
 				for acts in next_actions.keys():
 					
@@ -599,7 +599,7 @@ class DummyAgent():
 	def update(self):
 		
 		
-		self.choose_action()
+		#self.choose_action()
 		# called at the end of each time instance
 		self.act()
         	
