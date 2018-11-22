@@ -542,21 +542,20 @@ class DummyAgent():
 			else :
 				next_actions = self.env.next_segment(self.location[1])
 				valid_actions = [None]
-				for acts in next_actions.keys():
-					
+				for action in next_actions.keys():
 					# check which of the next segments have empty slots and append that action from the valid actions
-					#then, choose one of the actions randomply
-					
-					if next_actions[acts][0] == None : 
-						valid_actions.append(acts)
+					# then, choose one of the actions randomly
+					road = next_actions[action]
+					if self.env.road_segments[road][-1] == None : 
+						valid_actions.append(action)
 							
 				only_action = np.random.choice(valid_actions)		
 		else:
-			# move forward or None
-			current_road = self.env.road_segments[self.location[1]]
-			if current_road[len(current_road) - self.location[0]] == None :
+			# if next slot is free, move forward, or do nothing
+			
+			if self.env.road_segments[self.location[1]][self.location[0]-1] == None:
 				only_action = 'forward'
-			else :
+			else:
 				only_action = None
 		
 		return only_action
@@ -570,28 +569,44 @@ class DummyAgent():
 			return
 		else :
 			action = self.choose_action()
+			print "dummy action is ", action
 			if action != None :
-				if (self.location[0] - 1) != 0:
-					self.env.road_segments[len(self.env.road_segments) - self.location[0] ] = self.ID 
-					self.env.road_segments[len(self.env.road_segments) - self.location[0] - 1] = None
-					new_loc = self.location[0] - 1
-					new_seg = self.location[1]
-					self.location = (new_loc, new_seg)
-				elif self.location[0] == 0 :
-					self.env.road_segments[-1] = None
-					segments = self.env.next_segemnts(self.location[1])
-					new_seg = segments[action]
-					new_segment = self.env.road_segments[new_seg]
-					new_segment[0] = self.ID 
-					self.env.road_segments[new_seg] = new_segment
-					self.location = (len(new_segment)-1, new_seg)
+			
+				# empty the current location on road
+				self.env.road_segments[self.location[1]][self.location[0]] = None
+				
+				if self.is_at_intersection:
+					
+					# find next road segment, according to the action taken
+					next_actions = self.env.next_segment(self.location[1])
+					next_road = next_actions[action]
+					next_slot = len(self.env.road_segments[next_road])-1
+					
+					 
+					
+					# move to next road segment, last slot
+					self.location = (next_slot, next_road)
+					self.env.road_segments[next_road][next_slot] = self.ID
+					
+					# update is_at_intersection flag to False
 					self.is_at_intersection = False
-				elif (self.location[0] - 1) == 0 :
-					self.env.road_segments[self.location[1]][-1] = self.ID 
-					self.env.road_segments[self.location[1]][-2] = None 
-					new_seg = self.location[1]
-					self.location = (0, new_seg)
-					self.is_at_intersection = True					
+					
+					
+				else:
+					# empty the current locatio on road
+					# self.env.road_segments[location[1]][location[0]] = None
+				
+					
+					# fill the immediate next slot in the same segment, as the action is obviously forward if its not None
+					next_slot = self.location[0] - 1					
+					self.location = (next_slot, self.location[1])
+					self.env.road_segments[self.location[1]][next_slot] = self.ID
+					
+					# update is_at_intersection flag to True if the next slot is the intersection
+					if next_slot == 0:
+						self.is_at_intersection = True
+			
+				
 			return 
 		
 	
@@ -601,7 +616,8 @@ class DummyAgent():
 		#self.choose_action()
 		# called at the end of each time instance
 		print "dummy is at ", self.location
-		print "dummy color is ", self.color
+		#print "dummy color is ", self.color
+		#print "Am I at intersection? ", self.is_at_intersection
 		#print "dummy "
 		self.act()
 
