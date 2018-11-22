@@ -540,7 +540,7 @@ class DummyAgent():
 			if inputs['light'] == 'red' :
 				only_action = None
 			else :
-				next_actions = self.env.new_segment(self.location[1])
+				next_actions = self.env.next_segment(self.location[1])
 				valid_actions = [None]
 				for acts in next_actions.keys():
 					
@@ -565,8 +565,7 @@ class DummyAgent():
 	def act(self):
 		# update location and is_at_intersection flag after taking relevant action
 		if ( self.location[1][1] in self.env.exit_nodes ) and ( self.location[0] == 0 ) :
-			self.location = None
-			self.ID = None
+			self.location = self.location[1][1]
 			
 			return
 		else :
@@ -601,7 +600,11 @@ class DummyAgent():
 		
 		#self.choose_action()
 		# called at the end of each time instance
+		print "dummy is at ", self.location
+		print "dummy color is ", self.color
+		#print "dummy "
 		self.act()
+
         	
 		return
 
@@ -638,7 +641,7 @@ def run():
 	env.dummy_agent_list_start.append(dummy_agent)
 	
 	
-	sim = Simulator(env, display = False)
+	sim = Simulator(env)
 	
 	print "yep!"
 	print len(env.smart_agent_list_start)

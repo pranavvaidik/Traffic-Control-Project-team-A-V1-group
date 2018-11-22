@@ -242,7 +242,7 @@ class Simulator():
 		# Add Dynamic elements from here on
 		
 		
-		for agent in self.env.smart_agent_list_current:
+		for agent in self.env.agent_list_current:
 			car_location, rotated_sprite = self.place_vehicle(agent)
 			self.screen.blit(rotated_sprite, car_location)
 		
