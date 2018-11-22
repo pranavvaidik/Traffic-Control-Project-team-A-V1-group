@@ -638,7 +638,7 @@ def run():
 	env.dummy_agent_list_start.append(dummy_agent)
 	
 	
-	sim = Simulator(env, display = False)
+	sim = Simulator(env)
 	
 	print "yep!"
 	print len(env.smart_agent_list_start)
