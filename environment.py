@@ -212,7 +212,20 @@ class Environment():
 			agent.state = None
 			self.smart_agent_list_start.append(agent)
 		
+		for agent in self.dummy_agent_list_current:
+			#print "NOT REACHED"
+			agent.location = None
+			#agent.destination = None
+			agent.start_point = None
+			#agent.state = None
+			self.dummy_agent_list_start.append(agent)
+		
+		
+		
+		
 		self.smart_agent_list_current = []
+		self.dummy_agent_list_current = []
+		
 		
 		for agent in self.smart_agent_list_reached:
 			
@@ -233,6 +246,11 @@ class Environment():
 			self.smart_agent_list_start.append(agent)
 			
 		self.smart_agent_list_reached = []
+		
+		
+		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
+		
+		
 		
 	
 	def update_traffic_lights(self):
@@ -265,10 +283,35 @@ class Environment():
 	
 	def step(self):
 		
+		
+		
+		
+		
 		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
 		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
 		
-		
+		if len(self.dummy_agent_list_start) > 0:
+			print "This is ", len(self.dummy_agent_list_start)
+	        	send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
+	                        		
+	           	if send_flag:
+	                     	new_agent = self.dummy_agent_list_start.pop()
+	                        current_road = [item for item in self.road_segments.keys() if item[0] == new_agent.start_point]
+
+				print current_road, new_agent.start_point
+				print self.road_segments.keys()
+				print new_agent.ID
+
+
+	                        location_on_road = len(self.road_segments[current_road[0]])-1
+	                        new_agent.location = (location_on_road, current_road[0])
+	                        if new_agent.is_smart:
+	                        	self.smart_agent_list_current.append(new_agent)
+	                        else:
+	                        	self.dummy_agent_list_current.append(new_agent)
+	                        	print "this happened"
+	                        	print new_agent.location	
+	                        	
 		
 		# update traffic lights
 		self.update_traffic_lights()
@@ -288,6 +331,7 @@ class Environment():
 				else:
 					self.dummy_agent_list_start.append(agent)
 					self.dummy_agent_list_current.remove(agent)
+					print "agent loc is: ", agent.location
 				
 					
 		

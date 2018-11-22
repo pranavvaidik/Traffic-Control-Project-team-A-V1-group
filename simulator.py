@@ -309,20 +309,20 @@ class Simulator():
 	            	
 	            	# for each agent in env, set the start, destination and current location points
 	            	
-	            	for agent in self.env.smart_agent_list_start:
+	            	for agent in self.env.agent_list_start:
 	            		
 	            		choice = np.random.choice(len(self.env.exit_nodes))
 	            		agent.start_point = self.env.exit_nodes[choice]
 	            		
-	            		
-	            		if agent.start_point == (62,65):
-	            			 agent.destination = (0,-3)
-	            		elif agent.start_point == (0,-3):
-	            			 agent.destination = (62,65)
-	            		elif agent.start_point == (-3,62):
-	            			 agent.destination = (65,0)
-	            		elif agent.start_point == (65,0):
-	            			 agent.destination = (-3,62)
+	            		if agent.is_smart:
+	            			if agent.start_point == (62,65):
+	            				 agent.destination = (0,-3)
+	            			elif agent.start_point == (0,-3):
+	            				 agent.destination = (62,65)
+	            			elif agent.start_point == (-3,62):
+	            				 agent.destination = (65,0)
+	            			elif agent.start_point == (65,0):
+	            				 agent.destination = (-3,62)
 	            		
 	            		
 	            	
@@ -343,21 +343,12 @@ class Simulator():
 	                    	# Update environment
 	                    	if self.current_time - self.last_updated >= self.update_delay:
 	                        	
-	                        	if len(self.env.smart_agent_list_start) > 0:
-	                        		send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
-	                        		
-	                        		if send_flag:
-	                        			new_agent = self.env.smart_agent_list_start.pop()
-	                        			current_road = [item for item in self.env.road_segments.keys() if item[0] == new_agent.start_point]
-	                        			
-	                        			location_on_road = len(self.env.road_segments[current_road[0]])-1
-	                        			new_agent.location = (location_on_road, current_road[0])
-	                        			self.env.smart_agent_list_current.append(new_agent)
+	                        	
 	                        		
 	                        		
 	                        	
 	                        	self.env.step()
-	                        	
+	                        	print "time is: ", self.env.time
 	                        	self.last_updated = self.current_time
 	                    		
 	                    		if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:

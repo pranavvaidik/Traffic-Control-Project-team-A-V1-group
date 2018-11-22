@@ -597,6 +597,9 @@ class DummyAgent():
 		
 	
 	def update(self):
+		
+		
+		self.choose_action()
 		# called at the end of each time instance
 		self.act()
         	
@@ -628,7 +631,7 @@ def run():
 	
 	
 	dummy_agent = create_agent(env,is_learning=False)
-	dummy_agent.ID = 1
+	dummy_agent.ID = 2
 	
 	
 	env.smart_agent_list_start.append(smart_agent)
