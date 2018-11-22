@@ -244,6 +244,12 @@ class Environment():
 			agent.start_point = None
 			agent.state = None
 			self.smart_agent_list_start.append(agent)
+		
+		for agent in self.dummy_agent_list_start:
+			agent.location = None
+			agent.start_point = None
+			#self.smart_agent_list_start.append(agent)
+		
 			
 		self.smart_agent_list_reached = []
 		
@@ -285,13 +291,19 @@ class Environment():
 		
 		
 		
+		#print "The num of smart agents are ", len(self.smart_agent_list_start)
+			
+		#for agent in self.smart_agent_list_start:
+		#	print "agent ID is ", agent.ID, agent.is_smart
 		
+        	#print "The num of dummy agents are ", len(self.dummy_agent_list_start)
+		#print "Total number of agents is ", len(self.agent_list_start)
 		
-		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
-		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
+		#self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
+		#self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
 		
 		if len(self.agent_list_start) > 0:
-			print "This is ", len(self.agent_list_start)
+			
 	        	send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
 	                        		
 	           	if send_flag:
@@ -304,8 +316,8 @@ class Environment():
 	                        else:
 	                        	self.dummy_agent_list_current.append(new_agent)
 	                        	self.dummy_agent_list_start.remove(new_agent)
-	                        	print "this happened"
-	                        	print new_agent.location	
+	                        	#print "this happened"
+	                        	#print new_agent.location	
 	                        
 	                     	
 	                     	
@@ -331,6 +343,13 @@ class Environment():
 			agent.update()
 		
 			if agent.location in self.exit_nodes:
+			
+			
+				if not agent.is_smart:
+					print "Dummy reached the destination"
+				else:
+					print "smart agent reached destination"
+					
 				temp.append(agent)
 				if agent.is_smart:
 					self.smart_agent_list_reached.append(agent)
@@ -340,7 +359,9 @@ class Environment():
 					self.dummy_agent_list_current.remove(agent)
 					print "agent loc is: ", agent.location
 				
-					
+		
+		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
+		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start			
 		
 			# also remove cars that crashed
 		

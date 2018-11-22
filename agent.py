@@ -220,9 +220,10 @@ class LearningAgent():
 			if self.is_at_intersection:
 				#print self.Q_intersection[state], state, action 
 				self.Q_intersection[state][action] = self.Q_intersection[state][action] + self.learning_rate * (reward - self.Q_intersection[state][action])
+				#print state, action, self.location
 			else:
 				self.Q_road_segment[state][action] = self.Q_road_segment[state][action] + self.learning_rate * (reward - self.Q_road_segment[state][action])
-				
+
 		
 		
 		if self.location[0] == 0:
@@ -569,7 +570,7 @@ class DummyAgent():
 			return
 		else :
 			action = self.choose_action()
-			print "dummy action is ", action
+			#print "dummy action is ", action
 			if action != None :
 			
 				# empty the current location on road
@@ -615,7 +616,7 @@ class DummyAgent():
 		
 		#self.choose_action()
 		# called at the end of each time instance
-		print "dummy is at ", self.location
+		#print "dummy is at ", self.location
 		#print "dummy color is ", self.color
 		#print "Am I at intersection? ", self.is_at_intersection
 		#print "dummy "
@@ -657,7 +658,7 @@ def run():
 	env.dummy_agent_list_start.append(dummy_agent)
 	
 	
-	sim = Simulator(env)
+	sim = Simulator(env, update_delay = 0.001)
 	
 	print "yep!"
 	print len(env.smart_agent_list_start)

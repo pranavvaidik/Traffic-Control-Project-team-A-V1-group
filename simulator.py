@@ -40,7 +40,7 @@ class Simulator():
             }
             
 	
-	def __init__(self,env, update_delay=0.15, display=True):
+	def __init__(self,env, update_delay=0.5, display=True):
 		
 		self.env = env
 		
@@ -125,7 +125,8 @@ class Simulator():
 
 		
 		
-        	print( "The length of the list is ", len(self.env.smart_agent_list_start))
+        	print "The num of smart agents are ", len(self.env.smart_agent_list_start)
+        	print "The num of dummy agents are ", len(self.env.dummy_agent_list_start)
 		
 		return
 	
@@ -178,7 +179,6 @@ class Simulator():
 
 	def place_vehicle(self,agent):
 		# takes in the location of the car and gives out the location on the UI
-		
 		road_segment = agent.location[1]
 		slot = len(self.env.road_segments[road_segment]) - agent.location[0]
 		
@@ -208,7 +208,7 @@ class Simulator():
 
 	
         
-        	# TODO: convert the rect boundaries to a math term dependent on parameters from env 
+        	# convert the rect boundaries to a math term dependent on parameters from env 
         	pygame.draw.rect(self.screen, self.boundary_color, ( self.bounds[0]*self.block_size, self.bounds[1]*self.block_size, self.bounds[2]*self.block_size, self.bounds[3]*self.block_size), 4)
         
         
@@ -341,7 +341,7 @@ class Simulator():
 	                    	
 	                    
 	                    	# Update environment
-	                    	if self.current_time - self.last_updated >= self.update_delay:
+	                    	if self.current_time - self.last_updated >= self.update_delay or self.env.time<2:
 	                        	
 	                        	
 	                        		
@@ -354,6 +354,7 @@ class Simulator():
 	                    		if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:
 	                    			# learning agent reached some destination or had an accident
 	                    			break
+	                    	
 	                    	
 	                    	# Render text
 	                    	#self.render_text(trial, testing)
