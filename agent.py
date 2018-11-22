@@ -580,7 +580,7 @@ class DummyAgent():
 					self.location = (new_loc, new_seg)
 				elif self.location[0] == 0 :
 					self.env.road_segments[-1] = None
-					segments = self.env.next_segemnt(self.location[1])
+					segments = self.env.next_segemnts(self.location[1])
 					new_seg = segments[action]
 					new_segment = self.env.road_segments[new_seg]
 					new_segment[0] = self.ID 
@@ -638,7 +638,7 @@ def run():
 	env.dummy_agent_list_start.append(dummy_agent)
 	
 	
-	sim = Simulator(env)
+	sim = Simulator(env, display = False)
 	
 	print "yep!"
 	print len(env.smart_agent_list_start)
