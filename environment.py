@@ -16,6 +16,7 @@ class Environment():
 	
 	turn_map = dict()
 	
+	#initializing the list of agents in the environment
 	smart_agent_list_current = []
 	
 	dummy_agent_list_current = []
@@ -30,6 +31,16 @@ class Environment():
 	
 	agent_list_start = smart_agent_list_start + dummy_agent_list_start
 	
+	
+	
+	# counting number of violations and throughput
+	collision_count = 0
+	signal_violation_count = 0
+	reached_count = 0
+	wrong_destination_reached_count = 0
+	throughput = 0
+	
+	#building a turn map
 	for key in ['NORTH','SOUTH','EAST','WEST']:
 		turn_map[key] = dict()
 		turn_map[key][key] = 'forward'

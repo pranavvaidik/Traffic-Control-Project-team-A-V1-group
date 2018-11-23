@@ -331,6 +331,12 @@ class LearningAgent():
 				else:	
 					#collision with next vehicle
 					reward = -50
+					print "A collision occured due to Agent ", self.ID
+					self.env.collision_count += 1  
+					
+					# remove the vehicle from the system and stop the trial if training
+					
+					
 		else:
 			# add what happens when close to destination (right and wrong)
 			
@@ -349,6 +355,8 @@ class LearningAgent():
 						# reached destination
 						self.location = self.destination
 						
+						# update thoughput metrics
+						self.env.reached_count += 1
 	
 					else:
 						reward = -5
@@ -365,7 +373,8 @@ class LearningAgent():
 						self.env.road_segments[self.location[1]][self.location[0]] = None						
 						# reached destination
 						self.location = self.location[1][1]
-						
+						# update thoughput metrics
+						self.env.wrong_destination_reached_count += 1
 						
 					else:
 						reward = -5
@@ -377,6 +386,11 @@ class LearningAgent():
 					else:
 						# red light violation, also better to remove this car from the system to make it simpler
 						reward = -50
+						
+						self.env.signal_violation_count += 1
+						
+						# remove the agent from the current list immediately
+						
 				else:
 					next_actions = self.env.next_segment(self.location[1])
 					
@@ -388,6 +402,7 @@ class LearningAgent():
 						if self.state[2] == False:
 							reward = -50
 							
+							self.env.collision_count += 1
 							#location of car should either not change or we have to remove the car from the traffic system
 							
 						else:
@@ -422,6 +437,7 @@ class LearningAgent():
 						if self.state[3] == False:
 							reward = -50
 							
+							self.env.collision_count += 1
 							#location of car should either not change or we have to remove the car from the traffic system
 							
 						else:
@@ -454,6 +470,7 @@ class LearningAgent():
 						if self.state[4] == False:
 							reward = -50
 							
+							self.env.collision_count += 1
 							#location of car should either not change or we have to remove the car from the traffic system
 							
 						else:
