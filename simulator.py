@@ -103,12 +103,14 @@ class Simulator():
 			print "agent list is ", len(self.env.agent_list_start), " long"
         		        
         	        for agent in self.env.smart_agent_list_start:
-        	        	agent.color = random.choice(self.env.car_colors.keys())
+        	        	color_list = self.env.car_colors.keys()
+        	        	color_list.remove('yellow')
+        	        	agent.color = random.choice(color_list)
         	            	agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
         	            	agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
 			
         	        for agent in self.env.dummy_agent_list_start:
-        	        	agent.color = random.choice(self.env.car_colors.keys())
+        	        	agent.color = 'yellow'#random.choice(self.env.car_colors.keys())
         	            	agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
         	            	agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
         	            	print "this was run atleast once"
@@ -282,7 +284,7 @@ class Simulator():
 	
 			self.env.reset()
 	
-	            # Flip testing switch
+	            	# Flip testing switch
 	            	if not testing:
 	                	if total_trials > 20: # Must complete minimum 20 training trials
 				        
@@ -307,22 +309,7 @@ class Simulator():
 	
 	            	
 	            	
-	            	# for each agent in env, set the start, destination and current location points
 	            	
-	            	for agent in self.env.agent_list_start:
-	            		
-	            		choice = np.random.choice(len(self.env.exit_nodes))
-	            		agent.start_point = self.env.exit_nodes[choice]
-	            		
-	            		if agent.is_smart:
-	            			if agent.start_point == (62,65):
-	            				 agent.destination = (0,-3)
-	            			elif agent.start_point == (0,-3):
-	            				 agent.destination = (62,65)
-	            			elif agent.start_point == (-3,62):
-	            				 agent.destination = (65,0)
-	            			elif agent.start_point == (65,0):
-	            				 agent.destination = (-3,62)
 	            		
 	            		
 	            	
@@ -332,28 +319,21 @@ class Simulator():
 	            	self.start_time = time.time()
 	            	
 	            	while self.env.time < 3600:
-	                	#try:
-	                    	# Update current time
-	                    	self.current_time = time.time() - self.start_time
-	
+	                	
+	                    	
 	                    	# Handle GUI events
 	                    
 	                    	
 	                    
 	                    	# Update environment
-	                    	if self.current_time - self.last_updated >= self.update_delay or self.env.time<2:
-	                        	
-	                        	
-	                        		
-	                        		
-	                        	
-	                        	self.env.step()
-	                        	print "time is: ", self.env.time
-	                        	self.last_updated = self.current_time
+	                    	
+	                    	self.env.step()
+	                        print "time is: ", self.env.time
+	                        self.last_updated = self.current_time
 	                    		
-	                    		if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:
-	                    			# learning agent reached some destination or had an accident
-	                    			break
+	                    	if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:
+	                    		# learning agent reached some destination or had an accident
+	                    		break
 	                    	
 	                    	
 	                    	# Render text
@@ -374,15 +354,6 @@ class Simulator():
 					break
 				
 				
-		                #except KeyboardInterrupt:
-	                    	#	self.quit = True
-	                	#finally:
-	                    	#	if self.quit or self.env.done:
-	                        #		break
-	
-	            	#if self.quit:
-	                #	break
-	
 	            	
 	            	print("Trial number", trial)
 			

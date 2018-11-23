@@ -225,7 +225,7 @@ class Environment():
 		
 		self.smart_agent_list_current = []
 		self.dummy_agent_list_current = []
-		
+		self.agent_list_current = []
 		
 		for agent in self.smart_agent_list_reached:
 			
@@ -256,6 +256,9 @@ class Environment():
 		
 		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
 		
+		print "there are ", len(self.smart_agent_list_current), "smart agents"
+		print "there are ", len(self.dummy_agent_list_current), "dummy agents"
+		print "there are ", len(self.agent_list_current), "total agents"
 		
 		
 	
@@ -302,15 +305,47 @@ class Environment():
 		#self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
 		#self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
 		
+		
+		# for each agent in env, set the start, destination and current location points
+	            	
+	        """for agent in self.env.agent_list_start:
+	            		
+	        	choice = np.random.choice(len(self.env.exit_nodes))
+	            	agent.start_point = self.env.exit_nodes[choice]
+	            	
+	            	if agent.is_smart:
+	            		if agent.start_point == (62,65):
+	            			 agent.destination = (0,-3)
+	            		elif agent.start_point == (0,-3):
+	            			 agent.destination = (62,65)
+	            		elif agent.start_point == (-3,62):
+	            			 agent.destination = (65,0)
+	            		elif agent.start_point == (65,0):
+	            			 agent.destination = (-3,62)
+		"""
+		
+		
+		
 		if len(self.agent_list_start) > 0:
 			
 	        	send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
 	                        		
 	           	if send_flag:
 	                     	new_agent = self.agent_list_start.pop()
-	                     	
+	                     	choice = np.random.choice(len(self.exit_nodes))
+	            		new_agent.start_point = self.exit_nodes[choice]
 	                     	
 	                     	if new_agent.is_smart:
+	                     	
+	                     		if new_agent.start_point == (62,65):
+	            				 new_agent.destination = (0,-3)
+	            			elif new_agent.start_point == (0,-3):
+	            				 new_agent.destination = (62,65)
+	            			elif new_agent.start_point == (-3,62):
+	            				 new_agent.destination = (65,0)
+	            			elif new_agent.start_point == (65,0):
+	            				 new_agent.destination = (-3,62)
+	                     	
 	                        	self.smart_agent_list_current.append(new_agent)
 	                        	self.smart_agent_list_start.remove(new_agent)
 	                        else:
@@ -343,8 +378,6 @@ class Environment():
 			agent.update()
 		
 			if agent.location in self.exit_nodes:
-			
-			
 				if not agent.is_smart:
 					print "Dummy reached the destination"
 				else:
@@ -358,6 +391,8 @@ class Environment():
 					self.dummy_agent_list_start.append(agent)
 					self.dummy_agent_list_current.remove(agent)
 					print "agent loc is: ", agent.location
+			#if agent.location == None:
+			
 				
 		
 		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current

@@ -565,6 +565,7 @@ class DummyAgent():
 	def act(self):
 		# update location and is_at_intersection flag after taking relevant action
 		if ( self.location[1][1] in self.env.exit_nodes ) and ( self.location[0] == 0 ) :
+			self.env.road_segments[self.location[1]][self.location[0]] = None
 			self.location = self.location[1][1]
 			
 			return
@@ -606,8 +607,7 @@ class DummyAgent():
 					# update is_at_intersection flag to True if the next slot is the intersection
 					if next_slot == 0:
 						self.is_at_intersection = True
-			
-				
+
 			return 
 		
 	
@@ -644,18 +644,22 @@ def run():
 	
 	env = Environment()
 	
+	num_dummies = 12
+	num_smart = 1
+	
 	# For training scneario
 	
-	smart_agent = create_agent(env,is_learning=True)
-	smart_agent.ID = 1
+	for i in range(num_smart):
+		smart_agent = create_agent(env,is_learning=True)
+		smart_agent.ID = (i+1)*2 - 1
+		env.smart_agent_list_start.append(smart_agent)
+		
+	for i in range(num_dummies):
+		dummy_agent = create_agent(env,is_learning=False)
+		dummy_agent.ID = (i+1)*2
+		env.dummy_agent_list_start.append(dummy_agent)
 	
 	
-	dummy_agent = create_agent(env,is_learning=False)
-	dummy_agent.ID = 2
-	
-	
-	env.smart_agent_list_start.append(smart_agent)
-	env.dummy_agent_list_start.append(dummy_agent)
 	
 	
 	sim = Simulator(env, update_delay = 0.001)
