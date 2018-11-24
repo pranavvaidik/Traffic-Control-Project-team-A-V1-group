@@ -198,7 +198,7 @@ class Simulator():
 	
 	
 	
-	def render(self):
+	def render(self, trial, testing = False):
 	
 		# Reset the screen.
 	        self.screen.fill(self.bg_color)
@@ -249,8 +249,24 @@ class Simulator():
 			self.screen.blit(rotated_sprite, car_location)
 		
 		
+		# Overlays from here on
+		self.font = self.pygame.font.Font(None, 50)
+        	if testing:
+        	    	self.screen.blit(self.font.render("Testing Trial %s"%(trial), True, self.colors['black'], self.bg_color), (10, 10))
+        	else:
+            		self.screen.blit(self.font.render("Training Trial %s"%(trial), True, self.colors['black'], self.bg_color), (10, 10))
+
+	        self.font = self.pygame.font.Font(None, 30)
+		self.screen.blit(self.font.render("Number of Vehicles in System: %s" %(len(self.env.agent_list_current)), True, self.colors['black'], self.bg_color), (10,70))
 		
-		# everything in the loop should be in the render function, which is called in a while loop at every time instance
+		self.font = self.pygame.font.Font(None, 30)
+		self.screen.blit(self.font.render("Number of collisions: %s" %(self.env.collision_count), True, self.colors['red'], self.bg_color), (10,100))
+		
+		self.font = self.pygame.font.Font(None, 30)
+		self.screen.blit(self.font.render("Number of red light violations: %s" %(self.env.signal_violation_count), True, self.colors['magenta'], self.bg_color), (10,130))
+		
+		
+
         	for event in pygame.event.get():
         	        if event.type == pygame.QUIT:
         	                done = True
@@ -266,6 +282,61 @@ class Simulator():
 	
 		return
 	
+	
+	
+	def train_run(self, tolerance = 0.05, max_traials = 1000):
+		
+		
+		# initializing parameters and metrics for training
+		self.quit = False
+		
+	        #total_trials = 1
+	        #testing = False
+	        trial = 1
+	        
+	        while not self.quit:
+	        
+	        	self.env.reset()
+	        	
+	        	if trial > 20:
+	        	
+	        		a = self.env.smart_agent_list_start[0]
+	                    		
+	                    	if a.is_learning and a.epsilon < tolerance: # assumes epsilon decays towards 0  	
+	                          	self.quit = True
+	                        elif trial > max_traials:
+	                        	self.quit = True
+	                
+	                self.current_time = 0.0
+	            	#self.last_updated = 0.0
+	            	#self.start_time = time.time()
+	            	
+	            	while self.env.time < 1000:
+	                	
+	                    	# Update environment
+	                    	self.env.step()
+	                    		
+	                    	if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:
+	                    		# learning agent reached some destination or had an accident
+	                    		break
+	                    	
+	                    	# Render GUI and sleep
+	                    	if self.display:
+	                        	self.render(trial, testing = False)
+	                        	self.pygame.time.wait(self.frame_delay)
+	
+				for event in pygame.event.get():
+                			if event.type == pygame.QUIT:
+                        			self.quit = True
+                        		
+				
+				if self.quit:
+					break
+			
+			print("Trial number", trial)
+			trial = trial + 1
+
+		return
 		
 		
 	def run(self, tolerance=0.05, n_test=0):
@@ -305,15 +376,7 @@ class Simulator():
 	            	else:
 	                	if trial > n_test:
 	                    		break
-	
-	
-	            	
-	            	
-	            	
-	            		
-	            		
-	            	
-	            	
+
 	            	self.current_time = 0.0
 	            	self.last_updated = 0.0
 	            	self.start_time = time.time()
@@ -328,7 +391,7 @@ class Simulator():
 	                    	# Update environment
 	                    	
 	                    	self.env.step()
-	                        print "time is: ", self.env.time
+	                        #print "time is: ", self.env.time
 	                        self.last_updated = self.current_time
 	                    		
 	                    	if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:
@@ -341,7 +404,7 @@ class Simulator():
 	
 	                    	# Render GUI and sleep
 	                    	if self.display:
-	                        	self.render()
+	                        	self.render(trial, testing)
 	                        	self.pygame.time.wait(self.frame_delay)
 	
 	

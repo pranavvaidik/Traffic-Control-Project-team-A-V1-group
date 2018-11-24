@@ -219,8 +219,10 @@ class LearningAgent():
 			
 			if self.is_at_intersection:
 				#print self.Q_intersection[state], state, action 
-				self.Q_intersection[state][action] = self.Q_intersection[state][action] + self.learning_rate * (reward - self.Q_intersection[state][action])
-				#print state, action, self.location
+				try:
+					self.Q_intersection[state][action] = self.Q_intersection[state][action] + self.learning_rate * (reward - self.Q_intersection[state][action])
+				except:
+					print state, action, self.location
 			else:
 				self.Q_road_segment[state][action] = self.Q_road_segment[state][action] + self.learning_rate * (reward - self.Q_road_segment[state][action])
 
@@ -654,6 +656,12 @@ def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5):
         #self.agent_states[agent] = {'location': random.choice(self.intersections.keys()), 'heading': (0, 1)}
         return agent
 
+
+def train(env, sim, num_dummies, tolerance):
+
+
+	return
+
 		
 def run():
 	
@@ -661,11 +669,12 @@ def run():
 	
 	env = Environment()
 	
-	num_dummies = 12
+	num_dummies = 30
 	num_smart = 1
 	
-	# For training scneario
 	
+	
+	# For training scneario
 	for i in range(num_smart):
 		smart_agent = create_agent(env,is_learning=True)
 		smart_agent.ID = (i+1)*2 - 1
@@ -676,16 +685,18 @@ def run():
 		dummy_agent.ID = (i+1)*2
 		env.dummy_agent_list_start.append(dummy_agent)
 	
+	# initialize and train the simulator
+	sim = Simulator(env, update_delay = 0.01)
 	
 	
 	
-	sim = Simulator(env, update_delay = 0.001)
+	
 	
 	print "yep!"
 	print len(env.smart_agent_list_start)
 	print hasattr(smart_agent, '_sprite')
 	
-	sim.run(tolerance = 0.2, n_test = 50)
+	sim.train_run(tolerance = 0.2)
 	
 	
 	

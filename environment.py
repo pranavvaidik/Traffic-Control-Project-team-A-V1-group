@@ -214,6 +214,14 @@ class Environment():
 		# clear all roads
 		self.__init__()
 		
+		
+		self.collision_count = 0
+		self.signal_violation_count = 0
+		self.reached_count = 0
+		self.wrong_destination_reached_count = 0
+		self.throughput = 0
+		
+		
 		# clear all starting, current and end locations of agents
 		for agent in self.smart_agent_list_current:
 			print "NOT REACHED"
@@ -389,10 +397,10 @@ class Environment():
 			agent.update()
 		
 			if agent.location in self.exit_nodes:
-				if not agent.is_smart:
-					print "Dummy reached the destination"
-				else:
-					print "smart agent reached destination"
+				#if not agent.is_smart:
+				#	print "Dummy reached the destination"
+				#else:
+				#	print "smart agent reached destination"
 					
 				temp.append(agent)
 				if agent.is_smart:
@@ -401,7 +409,7 @@ class Environment():
 				else:
 					self.dummy_agent_list_start.append(agent)
 					self.dummy_agent_list_current.remove(agent)
-					print "agent loc is: ", agent.location
+				#	print "agent loc is: ", agent.location
 			#if agent.location == None:
 			
 				
