@@ -3,6 +3,7 @@ import numpy as np
 from environment import Environment
 import math
 from simulator import Simulator
+import pickle
 
 #creating agent class
 class LearningAgent():
@@ -696,12 +697,21 @@ def run():
 	num_smart = 3000
 	
 	# import the Q-function from a file here
+	f = open("Q-intersection.pkl","rb")
+	Q_intersection = pickle.load(f)
+	f.close()
+	
+	f = open("Q-road_segment.pkl","rb")
+	Q_road_segment = pickle.load(f)
+	f.close()
 	
 	# initialize the smart agents
 	for i in range(num_smart):
 		smart_agent = create_agent(env,is_learning=True)
 		smart_agent.ID = (i+1)*2 - 1
 		# assign Q-function to the agent here
+		smart_agent.Q_intersection = Q_intersection
+		smart_agent.Q_road_segment = Q_road_segment
 		
 		env.smart_agent_list_start.append(smart_agent)
 	
