@@ -6,7 +6,7 @@ import importlib
 import csv
 import numpy as np
 import sys
-
+import pickle
 
 class Simulator():
 	
@@ -330,6 +330,22 @@ class Simulator():
                         		
 				
 				if self.quit:
+					# save Q-functions to a file
+					if len(self.env.smart_agent_list_start) > 0:
+						a = self.env.smart_agent_list_start[0]
+					elif len(self.env.smart_agent_list_current) > 0:
+						a = self.env.smart_agent_list_current[0]
+					else:
+						break
+					
+					f = open("Q-intersection.pkl","wb")
+					pickle.dump(a.Q_intersection,f)
+					f.close()
+					
+					f = open("Q-road_segment.pkl","wb")
+					pickle.dump(a.Q_road_segment,f)
+					f.close()
+					
 					break
 			
 			print("Trial number", trial)
