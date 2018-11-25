@@ -394,10 +394,17 @@ class Environment():
 		return
 	
 	
-	def send_traffic_info(self):
+	def send_traffic_info(self, i_grp_list):
 		#join the continuous road segments and send to i-group
 		
-		return
+		traffic_lights = dict ()
+		k = 0
+		for i in range (0, 3) :
+			for j in range (0, 3) :
+				traffic_lights[self.traffic.nodes[k]] = i_grp_list[i][j]
+				k = k + 1
+				
+		return traffic_lights
 		
 
 		
