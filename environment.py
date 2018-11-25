@@ -33,12 +33,7 @@ class Environment():
 	
 	
 	
-	# counting number of violations and throughput
-	collision_count = 0
-	signal_violation_count = 0
-	reached_count = 0
-	wrong_destination_reached_count = 0
-	throughput = 0
+
 	
 	#building a turn map
 	for key in ['NORTH','SOUTH','EAST','WEST']:
@@ -89,7 +84,12 @@ class Environment():
 		self.block_size = 20
 		self.n_blocks = (69,69)
 		
-		
+		# counting number of violations and throughput
+		self.collision_count = 0
+		self.signal_violation_count = 0
+		self.reached_count = 0
+		self.wrong_destination_reached_count = 0
+		self.throughput = 0
 		
 		self.road_segments = dict()
 		
@@ -215,11 +215,11 @@ class Environment():
 		self.__init__()
 		
 		
-		self.collision_count = 0
-		self.signal_violation_count = 0
-		self.reached_count = 0
-		self.wrong_destination_reached_count = 0
-		self.throughput = 0
+		#self.collision_count = 0
+		#self.signal_violation_count = 0
+		#self.reached_count = 0
+		#self.wrong_destination_reached_count = 0
+		#self.throughput = 0
 		
 		
 		# clear all starting, current and end locations of agents
@@ -353,13 +353,6 @@ class Environment():
 	                        	#print "this happened"
 	                        	#print new_agent.location	
 	                        
-	                     	
-	                     	
-	                        #current_road = [item for item in self.road_segments.keys() if item[0] == new_agent.start_point]
-
-				# check if the slot is empty
-				
-
 				# place new agent on the new location
 	                        location_on_road = len(self.road_segments[current_road])-1
 	                        new_agent.location = (location_on_road, current_road)
@@ -375,12 +368,7 @@ class Environment():
 		for agent in self.agent_list_current:
 			agent.update()
 		
-			if agent.location in self.exit_nodes:
-				#if not agent.is_smart:
-				#	print "Dummy reached the destination"
-				#else:
-				#	print "smart agent reached destination"
-					
+			if agent.location in self.exit_nodes:	
 				temp.append(agent)
 				if agent.is_smart:
 					self.smart_agent_list_reached.append(agent)
@@ -388,9 +376,7 @@ class Environment():
 				else:
 					self.dummy_agent_list_start.append(agent)
 					self.dummy_agent_list_current.remove(agent)
-				#	print "agent loc is: ", agent.location
-			#if agent.location == None:
-			
+				
 				
 		
 		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
@@ -399,7 +385,7 @@ class Environment():
 		# also remove cars that crashed
 		
 		
-		
+		self.throughput = self.reached_count
 		
 		
 		self.time = self.time + 2

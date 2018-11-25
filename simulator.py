@@ -339,43 +339,18 @@ class Simulator():
 		return
 		
 		
-	def run(self, tolerance=0.05, n_test=0):
-	
-		
-		
+	def run(self, tolerance=0.05, n_test=10):
 		
 		self.quit = False
-		
-		
-	        total_trials = 1
-	        testing = False
 	        trial = 1
 
 	        while not self.quit:
 	
 			self.env.reset()
-	
-	            	# Flip testing switch
-	            	if not testing:
-	                	if total_trials > 20: # Must complete minimum 20 training trials
-				        
-	                    		a = self.env.smart_agent_list_start[0]
-	                    		
-	                    		if a.is_learning:
-	                        		if a.epsilon < tolerance: # assumes epsilon decays to 0
-	                            			testing = True
-	                            			trial = 1
-	                    		else:
-	                        		testing = True
-	                        		trial = 1
-	                        #if total_trials > 60:
-	                        #	testing = True
-	                        #	trial = 1
-	                        
+			        
 	            	# Break if we've reached the limit of testing trials
-	            	else:
-	                	if trial > n_test:
-	                    		break
+	            	if trial > n_test:
+	                	break
 
 	            	self.current_time = 0.0
 	            	self.last_updated = 0.0
@@ -391,11 +366,9 @@ class Simulator():
 	                    	# Update environment
 	                    	
 	                    	self.env.step()
-	                        #print "time is: ", self.env.time
-	                        self.last_updated = self.current_time
-	                    		
+	                        	
 	                    	if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:
-	                    		# learning agent reached some destination or had an accident
+	                    		# all learning agents reached some destination or had an accident
 	                    		break
 	                    	
 	                    	
@@ -404,7 +377,7 @@ class Simulator():
 	
 	                    	# Render GUI and sleep
 	                    	if self.display:
-	                        	self.render(trial, testing)
+	                        	self.render(trial, testing = True)
 	                        	self.pygame.time.wait(self.frame_delay)
 	
 	
@@ -423,23 +396,15 @@ class Simulator():
 			if testing:
 				print "TESTING"
 	            	# Trial finished
-#	        	if self.env.success == True:
-#	                	print "\nTrial Completed!"
-#	                	print "Agent reached the destination."
-#	            	else:
-#	                	print "\nTrial Aborted!"
-#	                	print "Agent did not reach the destination."
-	
 	            	# Increment
-	            	total_trials = total_trials + 1
 	            	trial = trial + 1
 	
 	
 	        print "\nSimulation ended. . . "
 	
 	        # Report final metrics
-	        #if self.display:
-	        #    self.pygame.display.quit()  # shut down pygame
+	        if self.display:
+	            self.pygame.display.quit()  # shut down pygame
 			
 			
 		

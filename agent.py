@@ -710,11 +710,6 @@ def train():
 	# initialize and train the simulator
 	sim = Simulator(env, update_delay = 0.01)
 	
-	
-	print "yep!"
-	print len(env.smart_agent_list_start)
-	print hasattr(smart_agent, '_sprite')
-	
 	sim.train_run(tolerance = 0.2)
 	
 	
