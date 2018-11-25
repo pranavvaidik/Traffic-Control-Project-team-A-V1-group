@@ -31,7 +31,7 @@ class Environment():
 	
 	agent_list_start = smart_agent_list_start + dummy_agent_list_start
 	
-	
+	collision_vehicle_list = []
 	
 
 	
@@ -223,6 +223,16 @@ class Environment():
 		
 		
 		# clear all starting, current and end locations of agents
+		for agent in self.collision_vehicle_list:
+			print "CRASHED"
+			agent.location = None
+			agent.destination = None
+			agent.start_point = None
+			agent.state = None
+			self.smart_agent_list_start.append(agent)
+		
+		
+		
 		for agent in self.smart_agent_list_current:
 			print "NOT REACHED"
 			agent.location = None
@@ -245,18 +255,20 @@ class Environment():
 		self.smart_agent_list_current = []
 		self.dummy_agent_list_current = []
 		self.agent_list_current = []
+		self.collision_vehicle_list = []
 		
 		for agent in self.smart_agent_list_reached:
 			
-			if agent.location == agent.destination:
+			"""if agent.location == agent.destination:
 				print agent.location
 				print agent.destination
-				print "SUCCESS"
+				#print "SUCCESS"
 			else:
 				print agent.location
 				print agent.destination
 				
-				print "FAILED"
+				#print "FAILED"
+			"""
 			
 			agent.location = None
 			agent.destination = None
@@ -274,10 +286,6 @@ class Environment():
 		
 		
 		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
-		
-		print "there are ", len(self.smart_agent_list_current), "smart agents"
-		print "there are ", len(self.dummy_agent_list_current), "dummy agents"
-		print "there are ", len(self.agent_list_current), "total agents"
 		
 		
 	
@@ -373,6 +381,9 @@ class Environment():
 		for agent in self.agent_list_current:
 			if agent.is_smart:
 				agent.move()
+				#if agent.location == None:
+				#	self.collision_vehicle_list.append(agent)
+				#	self.smart_agent_list_current.remove(agent)
 		
 			if agent.location in self.exit_nodes:	
 				temp.append(agent)

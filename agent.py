@@ -222,11 +222,13 @@ class LearningAgent():
 				try:
 					self.Q_intersection[state][action] = self.Q_intersection[state][action] + self.learning_rate * (reward - self.Q_intersection[state][action])
 				except:
-					print state, action, self.location
+					print state, action, self.location, "problem found", Q[state]
 			else:
 				self.Q_road_segment[state][action] = self.Q_road_segment[state][action] + self.learning_rate * (reward - self.Q_road_segment[state][action])
 
 		
+		if self.location == None:
+			return
 		
 		if self.location[0] == 0:
 			self.is_at_intersection = True
@@ -343,7 +345,10 @@ class LearningAgent():
 					print "A collision occured due to Agent ", self.ID, self.location
 					self.env.collision_count += 1  
 					
-					# remove the vehicle from the system and stop the trial if training
+					# remove the vehicle from the system and stop the trial if testing
+					if not self.is_learning:	
+						self.env.road_segments[self.location[1]][self.location[0]] = None
+						self.location = self.destination
 					
 					
 		else:
@@ -400,6 +405,11 @@ class LearningAgent():
 						
 						# remove the agent from the current list immediately
 						
+						if not self.is_learning:	
+							self.env.road_segments[self.location[1]][self.location[0]] = None
+							self.location = self.destination
+					
+						
 				else:
 					next_actions = self.env.next_segment(self.location[1])
 					
@@ -413,6 +423,12 @@ class LearningAgent():
 							
 							self.env.collision_count += 1
 							#location of car should either not change or we have to remove the car from the traffic system
+							
+							if not self.is_learning:	
+								self.env.road_segments[self.location[1]][self.location[0]] = None
+								self.location = self.destination
+					
+							
 							
 						else:
 							next_road = next_actions[action]
@@ -449,6 +465,11 @@ class LearningAgent():
 							self.env.collision_count += 1
 							#location of car should either not change or we have to remove the car from the traffic system
 							
+							if not self.is_learning:	
+								self.env.road_segments[self.location[1]][self.location[0]] = None
+								self.location = self.destination
+					
+							
 						else:
 							next_road = next_actions[action]
 							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
@@ -482,6 +503,10 @@ class LearningAgent():
 							self.env.collision_count += 1
 							#location of car should either not change or we have to remove the car from the traffic system
 							
+							if not self.is_learning:	
+								self.env.road_segments[self.location[1]][self.location[0]] = None
+								self.location = self.destination
+					
 						else:
 							next_road = next_actions[action]
 							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
@@ -715,7 +740,7 @@ def train():
 		env.dummy_agent_list_start.append(dummy_agent)
 	
 	# initialize and train the simulator
-	sim = Simulator(env, update_delay = 0.2)
+	sim = Simulator(env, update_delay = 0.01)
 	
 	sim.train_run(tolerance = 0.2)
 	

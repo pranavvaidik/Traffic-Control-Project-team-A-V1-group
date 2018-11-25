@@ -113,7 +113,6 @@ class Simulator():
         	        	agent.color = 'yellow'#random.choice(self.env.car_colors.keys())
         	            	agent._sprite = self.pygame.transform.smoothscale(self.pygame.image.load(os.path.join("images", "car-{}.png".format(agent.color))), self.agent_sprite_size)
         	            	agent._sprite_size = (agent._sprite.get_width(), agent._sprite.get_height())
-        	            	print "this was run atleast once"
 						
 			
         	        self.font = self.pygame.font.Font(None, 20)
@@ -311,7 +310,7 @@ class Simulator():
 	            	#self.last_updated = 0.0
 	            	#self.start_time = time.time()
 	            	
-	            	while self.env.time < 1000:
+	            	while self.env.time < 3600:
 	                	
 	                    	# Update environment
 	                    	self.env.step()
