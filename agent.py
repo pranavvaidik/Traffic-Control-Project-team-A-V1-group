@@ -657,13 +657,35 @@ def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5):
         return agent
 
 
-def train(env, sim, num_dummies, tolerance):
-
+def run():
+	
+	env = Environment()
+	
+	num_smart = 3000
+	
+	# import the Q-function from a file here
+	
+	# initialize the smart agents
+	for i in range(num_smart):
+		smart_agent = create_agent(env,is_learning=True)
+		smart_agent.ID = (i+1)*2 - 1
+		# assign Q-function to the agent here
+		
+		env.smart_agent_list_start.append(smart_agent)
+	
+	
+	
+	
+	
+	sim = Simulator(env, update_delay = 0.01)
+	
+	
+	sim.run()
 
 	return
 
 		
-def run():
+def train():
 	
 	#initializes the environment and the agents and runs the simulator
 	
@@ -689,9 +711,6 @@ def run():
 	sim = Simulator(env, update_delay = 0.01)
 	
 	
-	
-	
-	
 	print "yep!"
 	print len(env.smart_agent_list_start)
 	print hasattr(smart_agent, '_sprite')
@@ -702,4 +721,4 @@ def run():
 	
 
 if __name__ == '__main__':
-	run()
+	train()

@@ -396,16 +396,11 @@ class Environment():
 		self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
 		self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start			
 		
-			# also remove cars that crashed
+		# also remove cars that crashed
 		
 		
 		
 		
-		# during training, we are supposed to check for collisions
-		
-		
-		
-
 		
 		self.time = self.time + 2
 		
