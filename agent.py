@@ -669,18 +669,18 @@ def run():
 	
 	env = Environment()
 	
-	num_dummies = 30
-	num_smart = 1
+	num_dummies_train = 30
+	num_smart_train = 1
 	
 	
 	
 	# For training scneario
-	for i in range(num_smart):
+	for i in range(num_smart_train):
 		smart_agent = create_agent(env,is_learning=True)
 		smart_agent.ID = (i+1)*2 - 1
 		env.smart_agent_list_start.append(smart_agent)
 		
-	for i in range(num_dummies):
+	for i in range(num_dummies_train):
 		dummy_agent = create_agent(env,is_learning=False)
 		dummy_agent.ID = (i+1)*2
 		env.dummy_agent_list_start.append(dummy_agent)

@@ -312,47 +312,27 @@ class Environment():
 	def step(self):
 		
 		
-		
-		#print "The num of smart agents are ", len(self.smart_agent_list_start)
-			
-		#for agent in self.smart_agent_list_start:
-		#	print "agent ID is ", agent.ID, agent.is_smart
-		
-        	#print "The num of dummy agents are ", len(self.dummy_agent_list_start)
-		#print "Total number of agents is ", len(self.agent_list_start)
-		
-		#self.agent_list_current = self.smart_agent_list_current + self.dummy_agent_list_current
-		#self.agent_list_start = self.smart_agent_list_start + self.dummy_agent_list_start
-		
-		
 		# for each agent in env, set the start, destination and current location points
-	            	
-	        """for agent in self.env.agent_list_start:
-	            		
-	        	choice = np.random.choice(len(self.env.exit_nodes))
-	            	agent.start_point = self.env.exit_nodes[choice]
-	            	
-	            	if agent.is_smart:
-	            		if agent.start_point == (62,65):
-	            			 agent.destination = (0,-3)
-	            		elif agent.start_point == (0,-3):
-	            			 agent.destination = (62,65)
-	            		elif agent.start_point == (-3,62):
-	            			 agent.destination = (65,0)
-	            		elif agent.start_point == (65,0):
-	            			 agent.destination = (-3,62)
-		"""
-		
-		
-		
-		if len(self.agent_list_start) > 0:
+	        	
+		entry_roads = [item for item in self.road_segments.keys() if item[0] in self.exit_nodes]
 			
-	        	send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
-	                        		
-	           	if send_flag:
-	                     	new_agent = self.agent_list_start.pop()
-	                     	choice = np.random.choice(len(self.exit_nodes))
-	            		new_agent.start_point = self.exit_nodes[choice]
+		for current_road in entry_roads:
+			
+			if len(self.agent_list_start) > 0:
+				# check if the entry slot is empty
+				if not self.road_segments[current_road][-1]:
+					send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
+	               		else:
+	               			send_flag = False
+	                else:
+	                	send_flag = False
+	                
+	                       		
+	        	if send_flag:
+	               		new_agent = self.agent_list_start.pop()
+	                     	
+	               		# check which of the entry slots are vacant, and then place the vehicle
+	        		new_agent.start_point = current_road[0]
 	                     	
 	                     	if new_agent.is_smart:
 	                     	
@@ -375,15 +355,14 @@ class Environment():
 	                        
 	                     	
 	                     	
-	                        current_road = [item for item in self.road_segments.keys() if item[0] == new_agent.start_point]
+	                        #current_road = [item for item in self.road_segments.keys() if item[0] == new_agent.start_point]
 
-				#print current_road, new_agent.start_point
-				#print self.road_segments.keys()
-				#print new_agent.ID
+				# check if the slot is empty
+				
 
-
-	                        location_on_road = len(self.road_segments[current_road[0]])-1
-	                        new_agent.location = (location_on_road, current_road[0])
+				# place new agent on the new location
+	                        location_on_road = len(self.road_segments[current_road])-1
+	                        new_agent.location = (location_on_road, current_road)
 	                        	
 		
 		# update traffic lights
