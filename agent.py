@@ -269,14 +269,21 @@ class LearningAgent():
 		self.build_state()          # Get current state
 		
         	self.createQ(self.state)                 # Create 'state' in Q-table
-        	action = self.choose_action(self.state)  # Choose an action
-        	reward = self.act(action) # Receive a reward
-        	self.learn(self.state, action, reward)   # Q-learn
-		
+        	self.action = self.choose_action(self.state)  # Choose an action
+        	
 		
 		
 		#move, get reward, update Q-function
 		
+		return
+		
+		
+	def move(self):
+	
+		self.reward = self.act(self.action) # Receive a reward
+        	self.learn(self.state, self.action, self.reward)   # Q-learn
+		
+	
 		return
 		
 	def act(self, action):
@@ -333,7 +340,7 @@ class LearningAgent():
 				else:	
 					#collision with next vehicle
 					reward = -50
-					print "A collision occured due to Agent ", self.ID
+					print "A collision occured due to Agent ", self.ID, self.location
 					self.env.collision_count += 1  
 					
 					# remove the vehicle from the system and stop the trial if training
@@ -691,7 +698,7 @@ def train():
 	
 	env = Environment()
 	
-	num_dummies_train = 30
+	num_dummies_train = 50
 	num_smart_train = 1
 	
 	
@@ -708,7 +715,7 @@ def train():
 		env.dummy_agent_list_start.append(dummy_agent)
 	
 	# initialize and train the simulator
-	sim = Simulator(env, update_delay = 0.01)
+	sim = Simulator(env, update_delay = 0.2)
 	
 	sim.train_run(tolerance = 0.2)
 	

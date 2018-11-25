@@ -356,6 +356,7 @@ class Environment():
 				# place new agent on the new location
 	                        location_on_road = len(self.road_segments[current_road])-1
 	                        new_agent.location = (location_on_road, current_road)
+	                        self.road_segments[current_road][location_on_road] = new_agent.ID
 	                        	
 		
 		# update traffic lights
@@ -367,6 +368,11 @@ class Environment():
 		
 		for agent in self.agent_list_current:
 			agent.update()
+		
+		
+		for agent in self.agent_list_current:
+			if agent.is_smart:
+				agent.move()
 		
 			if agent.location in self.exit_nodes:	
 				temp.append(agent)
@@ -401,7 +407,7 @@ class Environment():
 		k = 0
 		for i in range (0, 3) :
 			for j in range (0, 3) :
-				traffic_lights[self.traffic.nodes[k]] = i_grp_list[i][j]
+				traffic_lights[self.traffic_nodes[k]] = i_grp_list[i][j]
 				k = k + 1
 				
 		return traffic_lights
