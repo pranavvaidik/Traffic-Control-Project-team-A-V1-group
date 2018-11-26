@@ -252,18 +252,26 @@ class Simulator():
 		self.font = self.pygame.font.Font(None, 50)
         	if testing:
         	    	self.screen.blit(self.font.render("Testing Trial %s"%(trial), True, self.colors['black'], self.bg_color), (10, 10))
+        	
+        		self.font = self.pygame.font.Font(None, 40)
+			self.screen.blit(self.font.render("Average Throughput: %s" %(self.env.average_throughput), True, self.colors['blue'], self.bg_color), (700,50))
+		
+        	
         	else:
             		self.screen.blit(self.font.render("Training Trial %s"%(trial), True, self.colors['black'], self.bg_color), (10, 10))
 
 	        self.font = self.pygame.font.Font(None, 30)
-		self.screen.blit(self.font.render("Number of Vehicles in System: %s" %(len(self.env.agent_list_current)), True, self.colors['black'], self.bg_color), (10,70))
+		self.screen.blit(self.font.render("Number of Vehicles in System: %s" %(len(self.env.agent_list_current)), True, self.colors['black'], self.bg_color), (10,40))
 		
 		self.font = self.pygame.font.Font(None, 30)
-		self.screen.blit(self.font.render("Number of collisions: %s" %(self.env.collision_count), True, self.colors['red'], self.bg_color), (10,100))
+		self.screen.blit(self.font.render("Number of collisions: %s" %(self.env.collision_count), True, self.colors['magenta'], self.bg_color), (10,70))
 		
 		self.font = self.pygame.font.Font(None, 30)
-		self.screen.blit(self.font.render("Number of red light violations: %s" %(self.env.signal_violation_count), True, self.colors['magenta'], self.bg_color), (10,130))
+		self.screen.blit(self.font.render("Number of red light violations: %s" %(self.env.signal_violation_count), True, self.colors['magenta'], self.bg_color), (10,100))
 		
+		
+        	#self.font = self.pygame.font.Font(None, 40)
+		#self.screen.blit(self.font.render("Average Throughput: %s" %(self.env.average_throughput), True, self.colors['blue'], self.bg_color), (700,50))
 		
 
         	for event in pygame.event.get():
@@ -320,13 +328,13 @@ class Simulator():
 	                    		break
 	                    	
 	                    	# Render GUI and sleep
-	                    	if self.display:
-	                        	self.render(trial, testing = False)
-	                        	self.pygame.time.wait(self.frame_delay)
+	                    	#if self.display:
+	                        	#self.render(trial, testing = False)
+	                        	#self.pygame.time.wait(self.frame_delay)
 	
-				for event in pygame.event.get():
-                			if event.type == pygame.QUIT:
-                        			self.quit = True
+				#for event in pygame.event.get():
+                		#	if event.type == pygame.QUIT:
+                        	#		self.quit = True
                         		
 				
 				if self.quit:
@@ -407,6 +415,8 @@ class Simulator():
 				
 	            	
 	            	print("Trial number", trial)
+			
+			self.env.average_throughput = ((self.env.average_throughput * trials) + self.env.throughput)/float(trial + 1)
 			
 			if testing:
 				print "TESTING"

@@ -73,6 +73,7 @@ class Environment():
 	
 	congestion_map = dict()
 	
+	average_throughput = 0
 	
 	def __init__(self):
 		
@@ -143,6 +144,7 @@ class Environment():
 		self.road_segments[((31,0),(62,0))] = [None]*30	
 		self.road_segments[((62,0),(31,0))] = [None]*30
 		
+
 		
 		for loc in self.nodes:
 			if loc not in self.exit_nodes:			
@@ -150,6 +152,8 @@ class Environment():
 				roads_ending_at_loc = [item for item in self.road_segments.keys() if item[1] == loc]
 				self.directions_to_loc[loc] = self.headings(roads_ending_at_loc)
 				self.directions_to_loc[loc].append(None)
+				
+		
 	
 	def valid_actions(self, location):
 		
@@ -211,7 +215,11 @@ class Environment():
 	
 	
 	def reset(self):
-		# clear all roads
+	
+		# update the average metrics
+		
+		
+		# clear all roads and metrics
 		self.__init__()
 		
 		
@@ -321,7 +329,7 @@ class Environment():
 		
 		
 		# for each agent in env, set the start, destination and current location points
-	        	
+	        self.update_traffic_lights()	
 		entry_roads = [item for item in self.road_segments.keys() if item[0] in self.exit_nodes]
 			
 		for current_road in entry_roads:
@@ -368,7 +376,7 @@ class Environment():
 	                        	
 		
 		# update traffic lights
-		self.update_traffic_lights()
+		#self.update_traffic_lights()
 		
 		
 		# update all vehicles

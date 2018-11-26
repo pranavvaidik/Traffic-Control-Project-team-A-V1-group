@@ -223,7 +223,7 @@ class LearningAgent():
 				try:
 					self.Q_intersection[state][action] = self.Q_intersection[state][action] + self.learning_rate * (reward - self.Q_intersection[state][action])
 				except:
-					print state, action, self.location, "problem found", Q[state]
+					print state, action, self.location, "problem found", self.Q_intersection[state]
 			else:
 				self.Q_road_segment[state][action] = self.Q_road_segment[state][action] + self.learning_rate * (reward - self.Q_road_segment[state][action])
 
@@ -759,3 +759,6 @@ def train():
 
 if __name__ == '__main__':
 	train()
+	
+	print "Training ended. Now Testing results"
+	run()
