@@ -269,11 +269,16 @@ class Simulator():
 		self.font = self.pygame.font.Font(None, 30)
 		self.screen.blit(self.font.render("Number of red light violations: %s" %(self.env.signal_violation_count), True, self.colors['magenta'], self.bg_color), (10,120))
 		
-		
         	self.font = self.pygame.font.Font(None, 30)
-		self.screen.blit(self.font.render("Time: %s" %(self.env.time), True, self.colors['blue'], self.bg_color), (700,80))
+		self.screen.blit(self.font.render("Time: %s" %(self.env.time), True, self.colors['blue'], self.bg_color), (700,90))
 		
-
+		self.font = self.pygame.font.Font(None, 35)
+		self.screen.blit(self.font.render("Number of vehicles reached: %s" %(self.env.reached_count), True, self.colors['blue'], self.bg_color), (700,120))
+		
+		self.font = self.pygame.font.Font(None, 35)
+		self.screen.blit(self.font.render("Number of vehicles reached wrong destination: %s" %(self.env.wrong_destination_reached_count), True, self.colors['blue'], self.bg_color), (700,160))
+		
+		
         	for event in pygame.event.get():
         	        if event.type == pygame.QUIT:
         	                done = True
@@ -418,7 +423,7 @@ class Simulator():
 	            	
 	            	print("Trial number", trial)
 			
-			self.env.average_throughput = ((self.env.average_throughput * trial) + self.env.throughput)/float(trial + 1)
+			self.env.average_throughput = ((self.env.average_throughput * (trial-1)) + self.env.throughput)/float(trial)
 			
 			#if testing:
 			#	print "TESTING"

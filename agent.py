@@ -137,7 +137,6 @@ class LearningAgent():
 		return np.random.choice(best_actions)
 	
 	
-	
 	def build_state(self):
 		
 		if self.location[0] == 0:
@@ -159,7 +158,6 @@ class LearningAgent():
 			waypoint = self.next_waypoint()
 			
 			# may consider taking in the congestion, but ignore for now
-			
 			self.state = (waypoint, inputs['light'], inputs['forward'], inputs['left'], inputs['right'] )
 			
 		else:
@@ -291,7 +289,7 @@ class LearningAgent():
         	self.createQ(self.state)                 # Create 'state' in Q-table
         	self.action = self.choose_action(self.state)  # Choose an action
         	
-		print "start point is: ", self.start_point, ", and destination is: ", self.destination
+		#print "start point is: ", self.start_point, ", and destination is: ", self.destination
 		
 		#move, get reward, update Q-function
 		
@@ -734,7 +732,7 @@ def run():
 	
 	env_sim = Environment()
 	
-	num_smart = 1
+	num_smart = 2
 	
 	# import the Q-function from a file here
 	f = open("Q-intersection.pkl","rb")
@@ -759,7 +757,7 @@ def run():
 	
 	
 	
-	sim2 = Simulator(env_sim, update_delay = 0.1)
+	sim2 = Simulator(env_sim, update_delay = 1)
 	
 	
 	sim2.run()
