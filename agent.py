@@ -732,7 +732,7 @@ def run():
 	
 	env_sim = Environment()
 	
-	num_smart = 2
+	num_smart = 3000
 	
 	# import the Q-function from a file here
 	f = open("Q-intersection.pkl","rb")
@@ -757,7 +757,7 @@ def run():
 	
 	
 	
-	sim2 = Simulator(env_sim, update_delay = 1)
+	sim2 = Simulator(env_sim, update_delay = 0.01)
 	
 	
 	sim2.run()
