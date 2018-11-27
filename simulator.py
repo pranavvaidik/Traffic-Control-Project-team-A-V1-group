@@ -261,17 +261,17 @@ class Simulator():
             		self.screen.blit(self.font.render("Training Trial %s"%(trial), True, self.colors['black'], self.bg_color), (10, 10))
 
 	        self.font = self.pygame.font.Font(None, 30)
-		self.screen.blit(self.font.render("Number of Vehicles in System: %s" %(len(self.env.agent_list_current)), True, self.colors['black'], self.bg_color), (10,40))
+		self.screen.blit(self.font.render("Number of Vehicles in System: %s" %(len(self.env.agent_list_current)), True, self.colors['black'], self.bg_color), (10,60))
 		
 		self.font = self.pygame.font.Font(None, 30)
-		self.screen.blit(self.font.render("Number of collisions: %s" %(self.env.collision_count), True, self.colors['magenta'], self.bg_color), (10,70))
+		self.screen.blit(self.font.render("Number of collisions: %s" %(self.env.collision_count), True, self.colors['magenta'], self.bg_color), (10,90))
 		
 		self.font = self.pygame.font.Font(None, 30)
-		self.screen.blit(self.font.render("Number of red light violations: %s" %(self.env.signal_violation_count), True, self.colors['magenta'], self.bg_color), (10,100))
+		self.screen.blit(self.font.render("Number of red light violations: %s" %(self.env.signal_violation_count), True, self.colors['magenta'], self.bg_color), (10,120))
 		
 		
-        	#self.font = self.pygame.font.Font(None, 40)
-		#self.screen.blit(self.font.render("Average Throughput: %s" %(self.env.average_throughput), True, self.colors['blue'], self.bg_color), (700,50))
+        	self.font = self.pygame.font.Font(None, 30)
+		self.screen.blit(self.font.render("Time: %s" %(self.env.time), True, self.colors['blue'], self.bg_color), (700,80))
 		
 
         	for event in pygame.event.get():
@@ -291,7 +291,7 @@ class Simulator():
 	
 	
 	
-	def train_run(self, tolerance = 0.05, max_traials = 1000):
+	def train_run(self, tolerance = 0.05, max_trials = 1000):
 		
 		
 		# initializing parameters and metrics for training
@@ -308,10 +308,10 @@ class Simulator():
 	        	if trial > 20:
 	        	
 	        		a = self.env.smart_agent_list_start[0]
-	                    		
+	                    	print "epsilon = ", a.epsilon	
 	                    	if a.is_learning and a.epsilon < tolerance: # assumes epsilon decays towards 0  	
 	                          	self.quit = True
-	                        elif trial > max_traials:
+	                        elif max_trials!=0 and trial > max_trails:
 	                        	self.quit = True
 	                
 	                self.current_time = 0.0
@@ -329,12 +329,12 @@ class Simulator():
 	                    	
 	                    	# Render GUI and sleep
 	                    	#if self.display:
-	                        	#self.render(trial, testing = False)
-	                        	#self.pygame.time.wait(self.frame_delay)
+	                        #	self.render(trial, testing = False)
+	                        #	self.pygame.time.wait(self.frame_delay)
 	
-				#for event in pygame.event.get():
-                		#	if event.type == pygame.QUIT:
-                        	#		self.quit = True
+				for event in pygame.event.get():
+                			if event.type == pygame.QUIT:
+                        			self.quit = True
                         		
 				
 				if self.quit:
@@ -354,6 +354,8 @@ class Simulator():
 					pickle.dump(a.Q_road_segment,f)
 					f.close()
 					
+					print "Q-functions were saved"
+					
 					break
 			
 			print("Trial number", trial)
@@ -369,7 +371,7 @@ class Simulator():
 
 	        while not self.quit:
 	
-			self.env.reset()
+			self.env.reset(is_testing = True)
 			        
 	            	# Break if we've reached the limit of testing trials
 	            	if trial > n_test:
@@ -416,13 +418,14 @@ class Simulator():
 	            	
 	            	print("Trial number", trial)
 			
-			self.env.average_throughput = ((self.env.average_throughput * trials) + self.env.throughput)/float(trial + 1)
+			self.env.average_throughput = ((self.env.average_throughput * trial) + self.env.throughput)/float(trial + 1)
 			
-			if testing:
-				print "TESTING"
+			#if testing:
+			#	print "TESTING"
 	            	# Trial finished
 	            	# Increment
 	            	trial = trial + 1
+	            	
 	
 	
 	        print "\nSimulation ended. . . "

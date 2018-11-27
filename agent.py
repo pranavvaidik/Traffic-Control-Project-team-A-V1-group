@@ -4,6 +4,7 @@ from environment import Environment
 import math
 from simulator import Simulator
 import pickle
+import random
 
 #creating agent class
 class LearningAgent():
@@ -11,7 +12,7 @@ class LearningAgent():
 	
 	location = None  #will be a tuple; first entry will be its location on the segment, second entry will be a tuple that describes the segment
 	
-	is_smart = True
+
 	
 	time_taken = 0
 	start_point = None
@@ -36,6 +37,7 @@ class LearningAgent():
 		self.ID = None
 		self.env = env
 		self.is_learning = is_learning
+		self.is_smart = True
 		
 	
 	def reset(self, destination=None, testing=False):
@@ -48,14 +50,14 @@ class LearningAgent():
 			self.epsilon = 0
 			self.learning_rate = 0
 		else:
-			a = 0.035
+			a = 0.0015
 			c = -5
 			if self.epsilon == 1:
 				t = 0
 			else:
 				t = (math.log(1/self.epsilon-1) - c)/a
-				t=t+1
-				self.epsilon = 1/(math.exp(a*t+c)+1)
+			t=t+1
+			self.epsilon = 1/(math.exp(a*t+c)+1)
 
         	return
 	
@@ -100,14 +102,14 @@ class LearningAgent():
 		# get the directions to destination from the next intersection
 		directions_to_destination = []
 		
-		if diff[0] > 0:
+		if diff[1] > 0:
 			directions_to_destination.append('NORTH')
-		elif diff[0] < 0:
+		elif diff[1] < 0:
 			directions_to_destination.append('SOUTH')
 		
-		if diff[1] > 0:
+		if diff[0] > 0:
 			directions_to_destination.append('EAST')
-		elif diff[1] < 0:
+		elif diff[0] < 0:
 			directions_to_destination.append('WEST')
 		
 		#possible actions at next intersection
@@ -121,7 +123,9 @@ class LearningAgent():
 		
 		if len(best_action_dirs) == 0:
 			# all next roads are moving away from the destination. all actions would be equally bad
-			best_actions = valid_actions.keys()
+			# also deliberately avoids to point to the wrong exit
+			best_actions = [action for action in valid_actions.keys() if valid_actions[action][1] not in self.env.exit_nodes]
+			
 		else:
 			# select list of actions that would point towards destination
 			best_actions = []
@@ -135,6 +139,13 @@ class LearningAgent():
 	
 	
 	def build_state(self):
+		
+		if self.location[0] == 0:
+			self.is_at_intersection = True
+		else:
+			self.is_at_intersection = False
+		
+		
 		
 		if self.is_at_intersection:
 			
@@ -153,7 +164,6 @@ class LearningAgent():
 			
 		else:
 			#check if next slot is empty; state will be of the form: {next_slot_empty: True/False}
-			
 			if self.env.road_segments[self.location[1]][self.location[0] - 1] == None:
 				self.state = (True)  #{'next_slot_empty':True}
 			else:
@@ -176,7 +186,10 @@ class LearningAgent():
 			valid_actions_list.append(None)
 			
 			if not self.is_learning:
-				action = np.random.choice(valid_actions_list)
+				#action = np.random.choice(valid_actions_list)
+				best_actions = [actions for actions, q_value in self.Q_intersection[state].items() if q_value == self.get_maxQ(state)]
+				action = random.choice(best_actions)
+				
 			else:
 				is_random = np.random.choice([True,False], p = [self.epsilon, 1-self.epsilon])
 				# using epsilon greedy method
@@ -185,13 +198,17 @@ class LearningAgent():
 				else:
 					best_actions = [actions for actions, q_value in self.Q_intersection[state].items() if q_value == self.get_maxQ(state)]
 					action = random.choice(best_actions)
+					print "The user is at ", self.location, ", the state is: ", self.state, " and the action taken was, ", action
+					print "Q function is ", self.Q_intersection[state]
 			
 		else:
 			# move forward or None
 			valid_actions_list = ['forward',None]
 			
 			if not self.is_learning:
-				action = np.random.choice(valid_actions_list)
+				#action = np.random.choice(valid_actions_list)
+				best_actions = [actions for actions, q_value in self.Q_road_segment[state].items() if q_value == self.get_maxQ(state)]
+				action = random.choice(best_actions)
 			else:
 				is_random = np.random.choice([True,False], p = [self.epsilon, 1-self.epsilon])
 				# using epsilon greedy method
@@ -274,7 +291,7 @@ class LearningAgent():
         	self.createQ(self.state)                 # Create 'state' in Q-table
         	self.action = self.choose_action(self.state)  # Choose an action
         	
-		
+		print "start point is: ", self.start_point, ", and destination is: ", self.destination
 		
 		#move, get reward, update Q-function
 		
@@ -283,8 +300,18 @@ class LearningAgent():
 		
 	def move(self):
 	
+		"""
+		if self.is_at_intersection:
+			print "State: ", self.state
+			print "Q-function is: ", self.Q_intersection[self.state]
+			print "Action: ", self.action """
+		#else:
+		#	print "Q-function is: ", self.Q_road_segment[self.state]
+			
 		self.reward = self.act(self.action) # Receive a reward
         	self.learn(self.state, self.action, self.reward)   # Q-learn
+		
+		
 		
 	
 		return
@@ -336,14 +363,12 @@ class LearningAgent():
 					
 					# fill next slot
 					self.location = next_location
-					
-					
-					
 					self.env.road_segments[self.location[1]][self.location[0]] = self.ID
+					
 				else:	
 					#collision with next vehicle
 					reward = -50
-					print "A collision occured due to Agent ", self.ID, self.location
+					#print "A collision occured due to Agent ", self.ID, " at ", self.location, ", state is: ", self.state, ", Q is: ", self.Q_road_segment[self.state]
 					self.env.collision_count += 1  
 					
 					# remove the vehicle from the system and stop the trial if testing
@@ -437,16 +462,16 @@ class LearningAgent():
 							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
 							
-							if next_road[1] in self.env.exit_nodes and next_road[1] != self.destination:
+							#if next_road[1] in self.env.exit_nodes and next_road[1] != self.destination:
 								#if next_road[1] != self.destination:
-								reward = -30 # penalty for entering the segment leading to wrong destination
+							#	reward = -30 # penalty for entering the segment leading to wrong destination
 						
 							
-							else:					
-								if distance_moved > 0:
-									reward = 1 # moving closer to destination
-								else:
-									reward = -1 # moving away from destination
+							#else:					
+							if distance_moved > 0:
+								reward = 1 # moving closer to destination
+							else:
+								reward = -1 # moving away from destination
 								
 							# empty current slot
 							self.env.road_segments[self.location[1]][self.location[0]] = None	
@@ -476,9 +501,9 @@ class LearningAgent():
 							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
 							
-							if next_road[1] in self.env.exit_nodes:
-								if next_road[1] != self.destination:
-									reward = -30 # penalty for entering the segment leading to wrong destination
+							#if next_road[1] in self.env.exit_nodes:
+							#	if next_road[1] != self.destination:
+							#		reward = -30 # penalty for entering the segment leading to wrong destination
 							
 							if distance_moved > 0:
 								reward = +1 # moving closer to destination
@@ -513,9 +538,9 @@ class LearningAgent():
 							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
 							
-							if next_road[1] in self.env.exit_nodes:
-								if next_road[1] != self.destination:
-									reward = -30 # penalty for entering the segment leading to wrong destination
+							#if next_road[1] in self.env.exit_nodes:
+							#	if next_road[1] != self.destination:
+							#		reward = -30 # penalty for entering the segment leading to wrong destination
 							
 							if distance_moved > 0:
 								reward = +1 # moving closer to destination
@@ -530,8 +555,21 @@ class LearningAgent():
 							
 							#self.is_at_intersection = False
 							self.env.road_segments[self.location[1]][self.location[0]] = self.ID
+					
+					if action is not None:
+						# extra reward for following the waypoint
+						if action == self.state[0]:
+							reward = reward + 5
+						
+			
+			
+			
 				
 				
+		#if self.location[1][1] not in self.env.exit_nodes and self.location[0] == 0:
+		#	self.is_at_intersection = True
+		#else:
+		#	self.is_at_intersection = False
 		return reward
 		
 	def dist_to_destination(self, location):
@@ -677,12 +715,14 @@ class DummyAgent():
         	
 		return
 
-def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5):
+def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5, testing = False):
 		
 	#creates agents.
 	
 	if is_learning:
 		agent = LearningAgent(env, epsilon, learning_rate, is_learning)
+		if testing:
+			agent.reset(testing = True)
 	else:
 		agent = DummyAgent(env)
 	
@@ -692,9 +732,9 @@ def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5):
 
 def run():
 	
-	env = Environment()
+	env_sim = Environment()
 	
-	num_smart = 3000
+	num_smart = 1
 	
 	# import the Q-function from a file here
 	f = open("Q-intersection.pkl","rb")
@@ -707,22 +747,22 @@ def run():
 	
 	# initialize the smart agents
 	for i in range(num_smart):
-		smart_agent = create_agent(env,is_learning=True)
+		smart_agent = create_agent(env_sim,is_learning=True, testing = True)
 		smart_agent.ID = (i+1)*2 - 1
 		# assign Q-function to the agent here
 		smart_agent.Q_intersection = Q_intersection
 		smart_agent.Q_road_segment = Q_road_segment
+		env_sim.smart_agent_list_start.append(smart_agent)
 		
-		env.smart_agent_list_start.append(smart_agent)
 	
 	
 	
 	
 	
-	sim = Simulator(env, update_delay = 0.01)
+	sim2 = Simulator(env_sim, update_delay = 0.1)
 	
 	
-	sim.run()
+	sim2.run()
 
 	return
 
@@ -730,18 +770,35 @@ def run():
 def train():
 	
 	#initializes the environment and the agents and runs the simulator
-	
 	env = Environment()
 	
-	num_dummies_train = 50
+	num_dummies_train = 30
 	num_smart_train = 1
 	
+	try:
+		# import the Q-function from a file here
+		f = open("Q-intersection.pkl","rb")
+		Q_intersection = pickle.load(f)
+		f.close()
+		
+		f = open("Q-road_segment.pkl","rb")
+		Q_road_segment = pickle.load(f)
+		f.close()
+	except:
+		print "File not found. We train from scratch"
 	
 	
 	# For training scneario
 	for i in range(num_smart_train):
 		smart_agent = create_agent(env,is_learning=True)
 		smart_agent.ID = (i+1)*2 - 1
+		
+		# assign Q-function here
+		try:
+			smart_agent.Q_intersection = Q_intersection
+			smart_agent.Q_road_segment = Q_road_segment
+		except:
+			print "Q-function will start as an empty dictionary"
 		env.smart_agent_list_start.append(smart_agent)
 		
 	for i in range(num_dummies_train):
@@ -750,15 +807,16 @@ def train():
 		env.dummy_agent_list_start.append(dummy_agent)
 	
 	# initialize and train the simulator
-	sim = Simulator(env, update_delay = 0.01)
+	sim = Simulator(env, update_delay = 0.001)
 	
-	sim.train_run(tolerance = 0.2)
+	sim.train_run(tolerance = 0.2, max_trials = 0)
 	
+	return
 	
 	
 
 if __name__ == '__main__':
-	train()
+	#train()
 	
 	print "Training ended. Now Testing results"
 	run()

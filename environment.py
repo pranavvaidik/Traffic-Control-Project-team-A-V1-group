@@ -214,7 +214,7 @@ class Environment():
 		
 	
 	
-	def reset(self):
+	def reset(self,is_testing = False):
 	
 		# update the average metrics
 		
@@ -233,20 +233,24 @@ class Environment():
 		# clear all starting, current and end locations of agents
 		for agent in self.collision_vehicle_list:
 			print "CRASHED"
+			agent.reset(testing = is_testing)
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
 			agent.state = None
+			agent.is_at_intersection = None
 			self.smart_agent_list_start.append(agent)
 		
 		
 		
 		for agent in self.smart_agent_list_current:
 			print "NOT REACHED"
+			agent.reset(testing = is_testing)
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
 			agent.state = None
+			agent.is_at_intersection = None
 			self.smart_agent_list_start.append(agent)
 		
 		for agent in self.dummy_agent_list_current:
@@ -277,11 +281,12 @@ class Environment():
 				
 				#print "FAILED"
 			"""
-			
+			agent.reset(testing = is_testing)
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
 			agent.state = None
+			agent.is_at_intersection = None
 			self.smart_agent_list_start.append(agent)
 		
 		for agent in self.dummy_agent_list_start:
@@ -337,7 +342,7 @@ class Environment():
 			if len(self.agent_list_start) > 0:
 				# check if the entry slot is empty
 				if not self.road_segments[current_road][-1]:
-					send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
+					send_flag = np.random.choice([True,False],p=[0.5,0.5]) # will change the distribution later
 	               		else:
 	               			send_flag = False
 	                else:
@@ -373,7 +378,7 @@ class Environment():
 	                        location_on_road = len(self.road_segments[current_road])-1
 	                        new_agent.location = (location_on_road, current_road)
 	                        self.road_segments[current_road][location_on_road] = new_agent.ID
-	                        	
+	                        #print new_agent.destination, new_agent.start_point	
 		
 		# update traffic lights
 		#self.update_traffic_lights()
