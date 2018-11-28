@@ -1,7 +1,7 @@
 # add relevant libraries here
 import numpy as np
 #from agent import LearningAgent, DummyAgent
-
+from i1_infrastructure import Traffic as TL_i1
 
 class Environment():
 	nodes = [(62,65), (-3,62), (0,62), (31,62), (62,62), (0,31), (31,31), (62,31), (0,0), (31,0), (62,0), (65,0), (0,-3)]
@@ -303,12 +303,19 @@ class Environment():
 		
 	
 	def update_traffic_lights(self):
+		
+		#try:
+		#self.traffic_lights = self.update_traffic_from_infrastructure()
+		#except:
+			
+		print "Random lights were used"
+		
 		for loc in self.nodes:
 			dirs = [None]
 			if loc not in self.exit_nodes:                
-                		#choose the signal randomly from legal directions
+	        		#choose the signal randomly from legal directions
 				self.traffic_lights[loc] = np.random.choice(self.directions_to_loc[loc])
-       
+
    		return
 	
 	
@@ -342,7 +349,7 @@ class Environment():
 			if len(self.agent_list_start) > 0:
 				# check if the entry slot is empty
 				if not self.road_segments[current_road][-1]:
-					send_flag = np.random.choice([True,False],p=[0.5,0.5]) # will change the distribution later
+					send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
 	               		else:
 	               			send_flag = False
 	                else:
@@ -417,22 +424,48 @@ class Environment():
 		
 		self.throughput = self.reached_count
 		
-		
 		self.time = self.time + 2
 		
 		
 		return
 	
 	
-	def send_traffic_info(self, i_grp_list):
-		#join the continuous road segments and send to i-group
+	def update_traffic_from_infrastructure(self):
+		#flip road segments and send to i-group
 		
+		congestion_map = dict()
+		
+		for key in self.road_segments.keys():
+			congestion_map[key] = list(np.flip((self.road_segments[key])))
+			
+		# call i-group object here	
+		traffic = TL_i1()
+		
+		# call i-group function here and obtain traffic lights as a list		
+		traffic_lights_list = np.flipud(traffic.update_traffic_lights(congestion_map))
+		
+		print "lights are: ", traffic_lights_list
+		
+		# change the list to a dictionary
 		traffic_lights = dict ()
-		k = 0
-		for i in range (0, 3) :
-			for j in range (0, 3) :
-				traffic_lights[self.traffic_nodes[k]] = i_grp_list[i][j]
-				k = k + 1
+
+		for i in range (3) :
+			for j in range (3) :
+				traffic_lights[(31*i,31*j)] = traffic_lights_list[j][i]
+				
+		for key in traffic_lights.keys():
+			
+			if traffic_lights[key] == 'N':
+				traffic_lights[key] = 'NORTH'
+			elif traffic_lights[key] == 'E':
+				traffic_lights[key] = 'EAST'
+			elif traffic_lights[key] == 'W':
+				traffic_lights[key] = 'WEST'
+			elif traffic_lights[key] == 'S':
+				traffic_lights[key] = 'SOUTH'
+			elif traffic_lights[key] == '0' or traffic_lights[key] == 0:
+				traffic_lights[key] = None
+				
 				
 		return traffic_lights
 		

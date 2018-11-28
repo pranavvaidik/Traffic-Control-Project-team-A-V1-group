@@ -196,8 +196,8 @@ class LearningAgent():
 				else:
 					best_actions = [actions for actions, q_value in self.Q_intersection[state].items() if q_value == self.get_maxQ(state)]
 					action = random.choice(best_actions)
-					print "The user is at ", self.location, ", the state is: ", self.state, " and the action taken was, ", action
-					print "Q function is ", self.Q_intersection[state]
+					#print "The user is at ", self.location, ", the state is: ", self.state, " and the action taken was, ", action
+					#print "Q function is ", self.Q_intersection[state]
 			
 		else:
 			# move forward or None
@@ -757,7 +757,7 @@ def run():
 	
 	
 	
-	sim2 = Simulator(env_sim, update_delay = 0.01)
+	sim2 = Simulator(env_sim, update_delay = 3)
 	
 	
 	sim2.run()
