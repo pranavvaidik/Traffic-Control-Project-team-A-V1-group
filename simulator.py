@@ -367,7 +367,11 @@ class Simulator():
 			trial = trial + 1
 
 		return
-		
+	
+	
+	
+	
+	
 		
 	def run(self, tolerance=0.05, n_test=10):
 		
@@ -444,3 +448,110 @@ class Simulator():
 	
 	
 		return
+		
+		
+		
+		
+		
+	def train_run_intersection(self, tolerance=0.05, n_test=10, max_trials = 1000):
+		
+		self.quit = False
+	        trial = 1
+	        
+
+                
+
+	        while not self.quit:
+	
+			self.env.reset(is_testing = False)
+			
+			a = self.env.traffic
+	        
+			if trial > 20:
+				
+		            	print "Traffic object epsilon = ", a.epsilon
+		            	print "epsilon = ", a.epsilon
+		            	if a.epsilon < tolerance: # assumes epsilon decays towards 0  	
+		                  	self.quit = True
+		                elif max_trials!=0 and trial > max_trails:
+		                	self.quit = True
+			
+			        
+	            	# Break if we've reached the limit of testing trials
+	            	#if trial > n_test:
+	                
+	                #	break
+
+	            	#self.current_time = 0.0
+	            	#self.last_updated = 0.0
+	            	#self.start_time = time.time()
+	            	
+	            	while self.env.time < 3600:
+	                	
+	                    	
+	                    	# Handle GUI events
+	                    
+	                    	
+	                    
+	                    	# Update environment
+	                    	
+	                    	self.env.step()
+	                        	
+	                    	#if len(self.env.smart_agent_list_start) == 0 and len(self.env.smart_agent_list_current) == 0:
+	                    	#	# all learning agents reached some destination or had an accident
+	                    	#	break
+	                    	
+	                    	
+	                    	# Render text
+	                    	#self.render_text(trial, testing)
+	
+	                    	# Render GUI and sleep
+	                    	#if self.display:
+	                        #	self.render(trial, testing = True)
+	                        #	self.pygame.time.wait(self.frame_delay)
+	
+	
+				for event in pygame.event.get():
+                			if event.type == pygame.QUIT:
+                        			self.quit = True
+                        		
+				
+				if self.quit:
+				
+				
+					f = open("Q-for-i1.pkl","wb")
+					pickle.dump(a.state_act_q,f)
+					f.close()
+					
+					print "Q-functions were saved for i1"
+				
+					break
+				
+				
+	            	
+	            	print("Trial number", trial)
+			#print "Q is: ", a.state_act_q
+			self.env.average_throughput = ((self.env.average_throughput * (trial-1)) + self.env.throughput)/float(trial)
+			
+			#if testing:
+			#	print "TESTING"
+	            	# Trial finished
+	            	# Increment
+	            	trial = trial + 1
+	            	
+	
+	
+	        print "\nSimulation ended. . . "
+	
+	        # Report final metrics
+	        if self.display:
+	            self.pygame.display.quit()  # shut down pygame
+			
+			
+		
+	
+	
+		return
+		
+		
+		

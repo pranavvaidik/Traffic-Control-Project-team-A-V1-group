@@ -1,6 +1,9 @@
 # add relevant libraries here
 import numpy as np
+import sys
+sys.path.insert(0, 'i2_files/')
 #from agent import LearningAgent, DummyAgent
+from I2_Light import Traffic as TL_i2
 from i1_infrastructure import Traffic as TL_i1
 
 class Environment():
@@ -32,6 +35,7 @@ class Environment():
 	agent_list_start = smart_agent_list_start + dummy_agent_list_start
 	
 	collision_vehicle_list = []
+	
 	
 
 	
@@ -144,7 +148,8 @@ class Environment():
 		self.road_segments[((31,0),(62,0))] = [None]*30	
 		self.road_segments[((62,0),(31,0))] = [None]*30
 		
-
+		# call i-group object here	
+		self.traffic = TL_i1()
 		
 		for loc in self.nodes:
 			if loc not in self.exit_nodes:			
@@ -229,6 +234,11 @@ class Environment():
 		#self.wrong_destination_reached_count = 0
 		#self.throughput = 0
 		
+		#try:
+		self.traffic.reset(testing = is_testing)
+		#except:
+		#	print "Couldn't reset traffic lights"
+		
 		
 		# clear all starting, current and end locations of agents
 		for agent in self.collision_vehicle_list:
@@ -304,18 +314,20 @@ class Environment():
 	
 	def update_traffic_lights(self):
 		
-		#try:
-		#self.traffic_lights = self.update_traffic_from_infrastructure()
-		#except:
-			
-		print "Random lights were used"
+		self.traffic_lights = self.update_traffic_from_infrastructure()
 		
-		for loc in self.nodes:
-			dirs = [None]
-			if loc not in self.exit_nodes:                
-	        		#choose the signal randomly from legal directions
-				self.traffic_lights[loc] = np.random.choice(self.directions_to_loc[loc])
-
+		"""try:
+			self.traffic_lights = self.update_traffic_from_infrastructure()
+		except:
+			
+			print "Random lights were used"
+		
+			for loc in self.nodes:
+				dirs = [None]
+				if loc not in self.exit_nodes:                
+					#choose the signal randomly from legal directions
+					self.traffic_lights[loc] = np.random.choice(self.directions_to_loc[loc])
+		"""
    		return
 	
 	
@@ -438,13 +450,12 @@ class Environment():
 		for key in self.road_segments.keys():
 			congestion_map[key] = list(np.flip((self.road_segments[key])))
 			
-		# call i-group object here	
-		traffic = TL_i1()
+		
 		
 		# call i-group function here and obtain traffic lights as a list		
-		traffic_lights_list = np.flipud(traffic.update_traffic_lights(congestion_map))
+		traffic_lights_list = np.flipud(self.traffic.update_traffic_lights(congestion_map))
 		
-		print "lights are: ", traffic_lights_list
+		#print "lights are: ", traffic_lights_list
 		
 		# change the list to a dictionary
 		traffic_lights = dict ()
