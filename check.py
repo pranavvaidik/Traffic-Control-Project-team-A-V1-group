@@ -16,4 +16,4 @@ print "RED light states from here on ... "
 for key in red_key_list:
 	print "state is : ", key, ", Q is : ", Q_intersection[key]
 
-
+print "Total states = ", len(Q_intersection.keys())

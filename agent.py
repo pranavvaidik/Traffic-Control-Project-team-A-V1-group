@@ -292,6 +292,7 @@ class LearningAgent():
 					self.Q_intersection[state][action] = 0.0
 				self.Q_intersection[state][None] = 0.0
 				
+				print "New state found!"
 			#print Q_intersection
 						
 		else:
@@ -447,8 +448,8 @@ class LearningAgent():
 						reward = -50
 						
 						self.env.signal_violation_count += 1
-						print "violation happened at location: ", self.location, " State is: ", self.state, " action is: ", self.action
-						print "Q-function is: ", self.Q_intersection[self.state]
+						#print "violation happened at location: ", self.location, " State is: ", self.state, " action is: ", self.action
+						#print "Q-function is: ", self.Q_intersection[self.state]
 						
 						# remove the agent from the current list immediately
 						
@@ -766,6 +767,17 @@ def run():
 	Q_road_segment = pickle.load(f)
 	f.close()
 	
+	
+	try:
+		f = open("Q-for-i1.pkl","rb")
+		env_sim.traffic.state_act_q = pickle.load(f)
+		f.close()
+	except:
+		print "Unable to load the i1 group Q-function."
+	
+	
+	
+	
 	# initialize the smart agents
 	for i in range(num_smart):
 		smart_agent = create_agent(env_sim,is_learning=True, testing = True)
@@ -780,7 +792,7 @@ def run():
 	
 	
 	
-	sim2 = Simulator(env_sim, update_delay = 0.01)
+	sim2 = Simulator(env_sim, update_delay = 0.1)
 	
 	
 	sim2.run()
@@ -805,8 +817,11 @@ def train():
 		f = open("Q-road_segment.pkl","rb")
 		Q_road_segment = pickle.load(f)
 		f.close()
+		
 	except:
 		print "File not found. We train from scratch"
+	
+
 	
 	
 	# For training scneario
@@ -843,6 +858,8 @@ def intersection_train():
 	num_dummies_train = 150
 	#num_smart_train = 1
 	
+	print "Training intersection lights"
+	
 	try:
 		# import the Q-function from a file here
 		f = open("Q-for-i1.pkl","rb")
@@ -875,12 +892,11 @@ def intersection_train():
 		env.dummy_agent_list_start.append(dummy_agent)
 	
 	# initialize and train the simulator
-	sim = Simulator(env, update_delay = 0.001)
+	sim = Simulator(env, update_delay = 0.0001)
 	
 	sim.train_run_intersection(tolerance = 0.2, max_trials = 0)
 	
 	return
-
 
 if __name__ == '__main__':
 	#train()

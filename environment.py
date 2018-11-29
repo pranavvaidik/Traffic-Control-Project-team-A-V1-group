@@ -78,6 +78,8 @@ class Environment():
 	congestion_map = dict()
 	
 	average_throughput = 0
+
+	traffic = TL_i1()	
 	
 	def __init__(self):
 		
@@ -149,7 +151,8 @@ class Environment():
 		self.road_segments[((62,0),(31,0))] = [None]*30
 		
 		# call i-group object here	
-		self.traffic = TL_i1()
+		
+		#self.traffic = TL_i1()
 		
 		for loc in self.nodes:
 			if loc not in self.exit_nodes:			
@@ -316,7 +319,7 @@ class Environment():
 		
 		self.traffic_lights = self.update_traffic_from_infrastructure()
 		
-		"""try:
+		try:
 			self.traffic_lights = self.update_traffic_from_infrastructure()
 		except:
 			
@@ -327,7 +330,7 @@ class Environment():
 				if loc not in self.exit_nodes:                
 					#choose the signal randomly from legal directions
 					self.traffic_lights[loc] = np.random.choice(self.directions_to_loc[loc])
-		"""
+	
    		return
 	
 	
