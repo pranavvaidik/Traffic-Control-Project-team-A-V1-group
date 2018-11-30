@@ -97,6 +97,9 @@ class Environment():
 		self.reached_count = 0
 		self.wrong_destination_reached_count = 0
 		self.throughput = 0
+		self.wrong_route_count = 0
+		self.U_turn_count = 0
+		
 		
 		self.road_segments = dict()
 		
