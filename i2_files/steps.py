@@ -11,5 +11,5 @@ traffic = TL_i2()
 m = traffic.get_map()
 m[((0,-3),(0,0))] = [23,25]
 
-for i in range(1000):
+for i in range(10):
     traffic.update_traffic_lights(m)

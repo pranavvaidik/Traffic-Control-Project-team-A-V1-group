@@ -6,7 +6,6 @@ Created on Wed Nov 28 10:34:42 2018
 @author: pasha_bhai
 """
 import math
-import time
 import numpy as np
 
 
@@ -16,42 +15,41 @@ from Traffic_signal import Traffic_Lights,get_state,calc_reward,update_vehicles,
 class Traffic():
     
      get_traffic_signal = [None]*9
-     
-    
+     Q = [{},{},{},{},{},{},{},{},{}]
+     t = 0
+     throughput = 0
      def __init__(self):
         
         vehicle_id = self.get_map()
+        self.u_turn_violation_count = 0
+        self.red_signal_violation_count = 0
+        self.collisions_count = 0
         
         #Creating Traffic objects
-        self.get_traffic_signal[6] = Traffic_Lights([0,62], [vehicle_id.get((0,31),(0,62)),None,None,vehicle_id.get((0,62),(0,31)),vehicle_id.get((31,62),(0,62)),vehicle_id.get((0,62),(31,62)),vehicle_id.get((-3,62),(0,62)),vehicle_id.get((0,62),(-3,62))],[0,1,1,1])
-        self.get_traffic_signal[7] = Traffic_Lights([31,62],[vehicle_id.get((31,31),(31,62)),None,None,vehicle_id.get((31,62),(31,31)),vehicle_id.get((62,62),(31,62)),vehicle_id.get((31,62),(62,62)),vehicle_id.get((0,62),(31,31)),vehicle_id.get((31,62),(0,62))],[0,1,1,1])
-        self.get_traffic_signal[8] = Traffic_Lights([62,62],[vehicle_id.get((62,31),(62,62)),vehicle_id.get((62,62),(62,65)),vehicle_id.get((62,65),(62,62)),vehicle_id.get((62,62),(62,31)),None,None,vehicle_id.get((31,62),(62,62)),vehicle_id.get((62,62),(31,62))],[1,1,0,1])
+        self.get_traffic_signal[6] = Traffic_Lights([0,62], [None,None,vehicle_id.get((0,31),(0,62)),vehicle_id.get((0,62),(0,31)),vehicle_id.get((31,62),(0,62)),vehicle_id.get((0,62),(31,62)),vehicle_id.get((-3,62),(0,62)),vehicle_id.get((0,62),(-3,62))],[0,1,1,1])
+        self.get_traffic_signal[7] = Traffic_Lights([31,62],[None,None,vehicle_id.get((31,31),(31,62)),vehicle_id.get((31,62),(31,31)),vehicle_id.get((62,62),(31,62)),vehicle_id.get((31,62),(62,62)),vehicle_id.get((0,62),(31,31)),vehicle_id.get((31,62),(0,62))],[0,1,1,1])
+        self.get_traffic_signal[8] = Traffic_Lights([62,62],[vehicle_id.get((62,65),(62,62)),vehicle_id.get((62,62),(62,65)),vehicle_id.get((62,31),(62,62)),vehicle_id.get((62,62),(62,31)),None,None,vehicle_id.get((31,62),(62,62)),vehicle_id.get((62,62),(31,62))],[1,1,0,1])
 
         #Signals in the middle
-        self.get_traffic_signal[3] = Traffic_Lights([0,31], [vehicle_id.get((0,0),(0,31)),vehicle_id.get((0,31),(0,62)),vehicle_id.get((0,62),(0,31)),vehicle_id.get((0,31),(0,0)),vehicle_id.get((31,31),(0,31)),vehicle_id.get((0,31),(31,31)),None,None],[1,1,1,0])
-        self.get_traffic_signal[4] = Traffic_Lights([31,31],[vehicle_id.get((31,0),(31,31)),vehicle_id.get((31,31),(31,62)),vehicle_id.get((31,62),(31,31)),vehicle_id.get((31,31),(31,0)),vehicle_id.get((62,31),(31,31)),vehicle_id.get((31,31),(62,31)),vehicle_id.get((0,31),(31,31)),vehicle_id.get((31,31),(0,31))],[1,1,1,1])
-        self.get_traffic_signal[5] = Traffic_Lights([62,31],[vehicle_id.get((62,0),(62,31)),vehicle_id.get((62,31),(62,62)),vehicle_id.get((62,62),(62,31)),vehicle_id.get((62,31),(62,0)),None,None,vehicle_id.get((31,31),(62,31)),vehicle_id.get((62,31),(31,31))],[1,1,0,1])
+        self.get_traffic_signal[3] = Traffic_Lights([0,31], [vehicle_id.get((0,62),(0,31)),vehicle_id.get((0,31),(0,62)),vehicle_id.get((0,0),(0,31)),vehicle_id.get((0,31),(0,0)),vehicle_id.get((31,31),(0,31)),vehicle_id.get((0,31),(31,31)),None,None],[1,1,1,0])
+        self.get_traffic_signal[4] = Traffic_Lights([31,31],[vehicle_id.get((31,62),(31,31)),vehicle_id.get((31,31),(31,62)),vehicle_id.get((31,0),(31,31)),vehicle_id.get((31,31),(31,0)),vehicle_id.get((62,31),(31,31)),vehicle_id.get((31,31),(62,31)),vehicle_id.get((0,31),(31,31)),vehicle_id.get((31,31),(0,31))],[1,1,1,1])
+        self.get_traffic_signal[5] = Traffic_Lights([62,31],[vehicle_id.get((62,62),(62,31)),vehicle_id.get((62,31),(62,62)),vehicle_id.get((62,0),(62,31)),vehicle_id.get((62,31),(62,0)),None,None,vehicle_id.get((31,31),(62,31)),vehicle_id.get((62,31),(31,31))],[1,1,0,1])
 
         #Bottom most signals
-        self.get_traffic_signal[0] = Traffic_Lights([0,0], [vehicle_id.get((0,-3),(0,0)),vehicle_id.get((0,0),(0,31)),vehicle_id.get((0,31),(0,0)),vehicle_id.get((0,0),(0,-3)),vehicle_id.get((31,0),(0,0)),vehicle_id.get((0,0),(31,0)),None,None],[1,1,1,0])
-        self.get_traffic_signal[1] = Traffic_Lights([31,0],[None,vehicle_id.get((31,0),(31,31)),vehicle_id.get((31,31),(31,0)),None,vehicle_id.get((62,0),(31,0)),vehicle_id.get((31,0),(62,0)),vehicle_id.get((0,0),(31,0)),vehicle_id.get((31,0),(0,0))],[1,0,1,1])
-        self.get_traffic_signal[2] = Traffic_Lights([62,0],[None,vehicle_id.get((62,0),(62,31)),vehicle_id.get((62,31),(62,0)),None,vehicle_id.get((65,0),(62,0)),vehicle_id.get((62,0),(65,0)),vehicle_id.get((31,0),(62,0)),vehicle_id.get((62,0),(31,0))],[1,0,1,1])
+        self.get_traffic_signal[0] = Traffic_Lights([0,0], [vehicle_id.get((0,31),(0,0)),vehicle_id.get((0,0),(0,31)),vehicle_id.get((0,-3),(0,0)),vehicle_id.get((0,0),(0,-3)),vehicle_id.get((31,0),(0,0)),vehicle_id.get((0,0),(31,0)),None,None],[1,1,1,0])
+        self.get_traffic_signal[1] = Traffic_Lights([31,0],[vehicle_id.get((31,31),(31,0)),vehicle_id.get((31,0),(31,31)),None,None,vehicle_id.get((62,0),(31,0)),vehicle_id.get((31,0),(62,0)),vehicle_id.get((0,0),(31,0)),vehicle_id.get((31,0),(0,0))],[1,0,1,1])
+        self.get_traffic_signal[2] = Traffic_Lights([62,0],[vehicle_id.get((62,31),(62,0)),vehicle_id.get((62,0),(62,31)),None,None,vehicle_id.get((65,0),(62,0)),vehicle_id.get((62,0),(65,0)),vehicle_id.get((31,0),(62,0)),vehicle_id.get((62,0),(31,0))],[1,0,1,1])
 
         self.epsilon = 1
-        
-        
+         
      def update_traffic_lights(self, congestion_map):
          
          green_light        = [[],[],[]]
          check_green_action = [[],[],[]]
-         
+
          current_state = {}
          action = {}
          vehicle_id = congestion_map
-         red_signal_violation_count = 0
-         collisions_count = 0
-         no_collisions  = 0
-         
          
          # Execute this every timestep after vehicle movement
          for i in range(0,9):
@@ -68,16 +66,18 @@ class Traffic():
            #check for red signal violation
            red_signal_violation = self.TL.check_signal_violation()
            
-           
+           #u-turn_check
+           u_turn_violation = self.TL.check_u_turn_violation()
+           self.u_turn_violation_count+=u_turn_violation
            
            for n in range(0,len(red_signal_violation)):
                if red_signal_violation[n] == 1:
-                   red_signal_violation_count+=1
+                   self.red_signal_violation_count+=1
            
            
            #check for collisions
-           #no_collisions = self.TL.check_collision_at_signal()
-           #collisions_count+=1
+           no_collisions = self.TL.check_collision_at_signal()
+           self.collisions_count+=no_collisions
            
            #Update vehicle queue and counter associated with it to calculate waiting time
            
@@ -92,8 +92,14 @@ class Traffic():
            s_a = (current_state[i],action[i])
            self.TL.Q[s_a] = update_q_learning(self.TL.alpha,self.TL.gamma,self.TL.Q, current_state[i], action[i], reward, next_state) 
            
+           self.red_signal_violation_count = 0
+           
+           #Putting all the Q values of the 9 intersections in one list
+           self.Q[i] =  self.TL.Q
+           
            #TODO : throughput calculation
-         
+           #print self.Q[i]
+            
          for i in range(0,9):
             
             self.TL = self.get_traffic_signal[i]
@@ -122,13 +128,25 @@ class Traffic():
             self.epsilon = self.TL.epsilon
             
             
-           
-         return green_light#list(np.flipud(green_light))
+         #print '--------------------------'
+         #print 'Red Signal Violations =',self.red_signal_violation_count
+         #print 'Collisions            =',self.collisions_count
+         #print 'U_turn Violations     =',self.u_turn_violation_count
+         
+         if self.t > 3595:
+	       	 print '--------------------------'
+		 print 'Red Signal Violations =',self.red_signal_violation_count
+		 print 'Collisions            =',self.collisions_count
+		 print 'U_turn Violations     =',self.u_turn_violation_count
+		 print 'Throughput =',  self.throughput	 
+         
+         self.t +=2
+         return green_light
          
      
      #Function to reset epsilon
      def reset(self, testing=True):
-
+	 self.t = 0
          if testing:
 		 	 self.epsilon = 0
 			 self.learning_rate = 0

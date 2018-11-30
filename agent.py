@@ -485,6 +485,11 @@ class LearningAgent():
 							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
 							
+							if next_location[1][1] == self.location[1][0]:
+								print "U-turn taken"
+								self.U_turn_count +=1
+								reward = -50
+							
 							#if next_road[1] in self.env.exit_nodes and next_road[1] != self.destination:
 								#if next_road[1] != self.destination:
 							#	reward = -30 # penalty for entering the segment leading to wrong destination
@@ -504,7 +509,14 @@ class LearningAgent():
 							
 							#self.is_at_intersection = False
 							self.env.road_segments[self.location[1]][self.location[0]] = self.ID
-								
+							
+							
+							# No Wrong route -turns
+							if self.location[0] == 0:
+								#entered the wrong route 
+								reward = -100
+								print "Agent entered wrong route"
+								self.env.wrong_route_count +=1	
 					
 					elif action == 'left':
 						#collision with vehicle at left
@@ -524,6 +536,12 @@ class LearningAgent():
 							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
 							
+							if next_location[1][1] == self.location[1][0]:
+								print "U-turn taken"
+								self.U_turn_count +=1
+								reward = -50
+							
+							
 							#if next_road[1] in self.env.exit_nodes:
 							#	if next_road[1] != self.destination:
 							#		reward = -30 # penalty for entering the segment leading to wrong destination
@@ -543,6 +561,12 @@ class LearningAgent():
 							#self.is_at_intersection = False
 							self.env.road_segments[self.location[1]][self.location[0]] = self.ID
 							
+							# No Wrong route -turns
+							if self.location[0] == 0:
+								#entered the wrong route 
+								reward = -100
+								print "Agent entered wrong route"
+								self.env.wrong_route_count +=1
 					
 					elif action == 'right':
 						#collision with vehicle at right
@@ -560,6 +584,11 @@ class LearningAgent():
 							next_road = next_actions[action]
 							next_location = (len(self.env.road_segments[next_road])-1,next_road) 
 							distance_moved = self.dist_to_destination(self.location) - self.dist_to_destination(next_location)
+
+							if next_location[1][1] == self.location[1][0]:
+								print "U-turn taken"
+								self.U_turn_count +=1
+								reward = -50
 							
 							#if next_road[1] in self.env.exit_nodes:
 							#	if next_road[1] != self.destination:
@@ -578,13 +607,20 @@ class LearningAgent():
 							
 							#self.is_at_intersection = False
 							self.env.road_segments[self.location[1]][self.location[0]] = self.ID
+							
+							# No Wrong route -turns
+							if self.location[0] == 0:
+								#entered the wrong route 
+								reward = -100
+								print "Agent entered wrong route"
+								self.env.wrong_route_count +=1
 					
 					if action is not None:
 						# extra reward for following the waypoint
 						if action == self.state[0]:
 							reward = reward + 5
+							
 						
-			
 			
 			
 				
@@ -841,7 +877,7 @@ def run_i2():
 	
 	
 	
-	sim2 = Simulator(env_sim, update_delay = 0.1)
+	sim2 = Simulator(env_sim, update_delay = 0.01)
 	
 	
 	sim2.run()
@@ -971,8 +1007,8 @@ def intersection_train_i2():
 	#initializes the environment and the agents and runs the simulator
 	env = Environment()
 	
-	num_dummies_train = 150
-	#num_smart_train = 1
+	#num_dummies_train = 150
+	num_smart_train = 3000
 	
 	print "Training intersection lights"
 	
@@ -1037,8 +1073,8 @@ def intersection_train_i2():
 
 if __name__ == '__main__':
 	#train()
-	intersection_train_i1()
-	#intersection_train_i2()
+	#intersection_train_i1()
+	intersection_train_i2()
 	print "Training ended. Now Testing results"
 	#run_i1()
 	#run_i2()

@@ -278,6 +278,12 @@ class Simulator():
 		self.font = self.pygame.font.Font(None, 35)
 		self.screen.blit(self.font.render("Number of vehicles reached wrong destination: %s" %(self.env.wrong_destination_reached_count), True, self.colors['blue'], self.bg_color), (700,160))
 		
+		self.font = self.pygame.font.Font(None, 30)
+		self.screen.blit(self.font.render("Number of U-turns: %s" %(self.env.U_turn_count), True, self.colors['blue'], self.bg_color), (10,150))
+		
+		self.font = self.pygame.font.Font(None, 30)
+		self.screen.blit(self.font.render("Number of Wrong route entries: %s" %(self.env.wrong_route_count), True, self.colors['blue'], self.bg_color), (300,150))
+		
 		
         	for event in pygame.event.get():
         	        if event.type == pygame.QUIT:
@@ -645,7 +651,7 @@ class Simulator():
 	
 	        # Report final metrics
 	        if self.display:
-	            self.pygame.display.quit()  # shut down pygame
+	            	self.pygame.display.quit()  # shut down pygame
 			
 			
 		

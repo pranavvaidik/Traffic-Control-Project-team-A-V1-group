@@ -79,7 +79,7 @@ class Environment():
 	
 	average_throughput = 0
 
-	traffic = TL_i1()	
+	traffic = TL_i2()	 
 	
 	def __init__(self):
 		
@@ -97,6 +97,9 @@ class Environment():
 		self.reached_count = 0
 		self.wrong_destination_reached_count = 0
 		self.throughput = 0
+		self.wrong_route_count = 0
+		self.U_turn_count = 0
+		
 		
 		self.road_segments = dict()
 		
@@ -274,7 +277,7 @@ class Environment():
 		
 		
 		
-		
+
 		self.smart_agent_list_current = []
 		self.dummy_agent_list_current = []
 		self.agent_list_current = []
@@ -362,7 +365,7 @@ class Environment():
 			if len(self.agent_list_start) > 0:
 				# check if the entry slot is empty
 				if not self.road_segments[current_road][-1]:
-					send_flag = np.random.choice([True,False],p=[0.75,0.25])#[0.5,0.5]) # will change the distribution later
+					send_flag = np.random.choice([True,False],p=[1,0])#[0.5,0.5]) # will change the distribution later
 	               		else:
 	               			send_flag = False
 	                else:
@@ -406,6 +409,7 @@ class Environment():
 		
 		# update all vehicles
 		temp = []
+		self.traffic.throughput = self.throughput
 		
 		for agent in self.agent_list_current:
 			agent.update()
@@ -436,7 +440,7 @@ class Environment():
 		
 		
 		self.throughput = self.reached_count
-		
+
 		self.time = self.time + 2
 		
 		
@@ -455,6 +459,7 @@ class Environment():
 		
 		# call i-group function here and obtain traffic lights as a list		
 		traffic_lights_list = self.traffic.update_traffic_lights(congestion_map)#np.flipud()
+		#traffic_lights_list = np.flipud(self.traffic.update_traffic_lights(congestion_map))
 		
 		#print "lights are: ", traffic_lights_list
 		

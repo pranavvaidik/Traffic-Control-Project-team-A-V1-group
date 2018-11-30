@@ -206,7 +206,9 @@ class Q_learning:
     ####################################################################### trace of the car : dummy
 
 class Traffic:
-        
+    global collisions, red_light_violations, opposite_dir_runs,u_turns
+    collisions, red_light_violations, opposite_dir_runs, u_turns = 0,0,0,0
+    
     def __init__(self):
         self.trafficobj = [[0 for y in range(3)] for x in range(3)]
 
@@ -240,7 +242,7 @@ class Traffic:
         self.q_learn_obj = Q_learning()
         self.epsilon = self.q_learn_obj.epsilon
 
-    def reset(self, testing=False):
+    def reset(self, destination=None, testing=False):
     
     # Update epsilon using a decay function
     # Update additional class parameters as needed
@@ -256,15 +258,15 @@ class Traffic:
                     t = 0
             else:
                     t = (math.log(1/self.epsilon-1) - c)/a
-                    t=t+1
-                    self.epsilon = 1/(math.exp(a*t+c)+1)
+            t=t+1
+            self.epsilon = 1/(math.exp(a*t+c)+1)
         self.q_learn_obj.epsilon = self.epsilon
         return
 
 
 
 
-    def detect_collisions(self,act, vec_curr_state_cord,road_segments,cord): # we have direc_num = NEWS
+    def detect_collisions(self,act, vec_curr_state_cord,road_segments,cord,collisions): # we have direc_num = NEWS
         if 'G' in act:
             dr = act.index('G')
             prev_list_0, curr_list_0, prev_list_1, curr_list_1 = [-1 for x in range(4)], [-1 for x in range(4)],[-1 for x in range(4)],[-1 for x in range(4)]
@@ -290,36 +292,58 @@ class Traffic:
                 if prev_list_0[i] != None and prev_list_0[i] != -1:
                     if prev_list_1[i] == curr_list_1[i] and prev_list_0[i] != curr_list_0[i]:
                         collisions += 1
-                        print "Collisions are: ",collisions
+        print "Collisions are: ",collisions
         return
 
 
-    def detect_red_light_violations(self,act, vec_curr_state_cord,road_segments,cord):
+    def detect_red_light_violations(self,act, vec_curr_state_cord,road_segments,cord,red_light_violations):
     # monitor all other indices which are red
         curr_list_out,check_slots = [],[]
         for i,direc in enumerate(['N','E','W','S']):
             if road_segments[vec_curr_state_cord[direc][1]][0] != None:
                 curr_list_out.append(road_segments[vec_curr_state_cord[direc][1]][0]) # slot 0 of outgoing
             if act[i] == 'R':
-                #print road_segments[self.vec_prev_state]
-                if road_segments[self.vec_prev_state[direc][0]][-1] != None:
-                    check_slots.append(road_segments[self.vec_prev_state[direc][0]][-1]) # inc slot to be checked
+                if road_segments[self.vec_prev_state[cord][direc][0]][-1] != None:
+                    check_slots.append(road_segments[self.vec_prev_state[cord][direc][0]][-1]) # inc slot to be checked
         for vehicle in check_slots:
             if vehicle in curr_list_out:
                 red_light_violations += 1
-                print "Red Light Violations are: ",red_light_violations
+        print "Red Light Violations are: ",red_light_violations
         return
 
-    def detect_opposite_dir_runs(self, vec_curr_state_cord,road_segments,cord):
+    def detect_opposite_dir_runs(self, vec_curr_state_cord,road_segments,cord,opposite_dir_runs):
     # check if any vechicle goes from in in prev to in in curr
         prev_list_in, curr_list_in = [],[]
         for i,direc in enumerate(['N','E','W','S']):
-            prev_list_in.append(road_segments(self.vec_prev_state[direc][0])[-1])
-            curr_list_in.append(road_segments(vec_curr_state[direc][0])[-1])
-        for vehicle in prev_list_in:
-            if vehicle in curr_list_in:
-                opposite_dir_runs += 1
-
+            if road_segments[self.vec_prev_state[cord][direc][0]][-1] != None:
+            #prev_list_in.append(road_segments[self.vec_prev_state[cord][direc][0]][-1])
+                for dr in ['N','E','W','S']:
+                    if dr != direc and road_segments[vec_curr_state_cord[dr][0]][-1] != None:
+                        if road_segments[self.vec_prev_state[cord][direc][0]][-1] == road_segments[vec_curr_state_cord[dr][0]][-1]:
+                            opposite_dir_runs += 1
+        #curr_list_in.append(road_segments[vec_curr_state_cord[dr][0]][-1])
+        #for vehicle in prev_list_in:
+        #   if vehicle in curr_list_in:
+        #       opposite_dir_runs += 1
+        print "Opposite Direction Runs are: ",opposite_dir_runs
+        return
+                
+    def detect_u_turns(self, vec_curr_state_cord,road_segments,cord,u_turns):
+        # check if any vechicle goes from in in prev to in in curr
+        prev_list_in, curr_list_in = [],[]
+        for i,direc in enumerate(['N','E','W','S']):
+            if road_segments[self.vec_prev_state[cord][direc][0]][-1] != None and road_segments[vec_curr_state_cord[direc][1]][0] != None:
+                if road_segments[self.vec_prev_state[cord][direc][0]][-1] == road_segments[vec_curr_state_cord[direc][1]][0]:
+                    u_turns += 1
+            # if road_segments[self.vec_prev_state[cord][direc][0]][-1] != None:
+            #   prev_list_in.append(road_segments[self.vec_prev_state[cord][direc][0]][-1])
+            #if road_segments[vec_curr_state_cord[direc][1]][0] != None:
+            #   curr_list_in.append(road_segments[vec_curr_state_cord[direc][0]][-1])
+            #for i,vehicle in enumerate(prev_list_in):
+            #if curr_list_in[i] == vehicle:
+            #   u_turns += 1
+        print "U Turns are: ",u_turns
+        return
 
     def update_traffic_lights(self,road_segments):
         vec_curr_state = {}
@@ -350,9 +374,10 @@ class Traffic:
                     #print "previous state is: ",self.vec_prev_state[cord]
                     #print "curr state is: ", vec_curr_state[cord]
             	    
-                    self.detect_collisions(self.act, vec_curr_state[cord],road_segments,cord)
-                    #self.detect_red_light_violations(self.act, vec_curr_state[cord],road_segments,cord)
-                    #self.detect_opposite_dir_runs(vec_curr_state[cord])
+                    self.detect_collisions(self.act, vec_curr_state[cord],road_segments,cord,collisions)
+                    self.detect_red_light_violations(self.act, vec_curr_state[cord],road_segments,cord, red_light_violations)
+                    self.detect_opposite_dir_runs(vec_curr_state[cord],road_segments,cord,opposite_dir_runs)
+                    self.detect_u_turns(vec_curr_state[cord],road_segments,cord,u_turns)
                     self.vec_prev_state[cord] = vec_curr_state[cord]
         return v_grp_inp
 
