@@ -245,10 +245,11 @@ class Traffic:
     # Update epsilon using a decay function
     # Update additional class parameters as needed
     # If 'testing' is True, set epsilon and alpha to 0
-    
+    	print "epsilon is", self.epsilon
         if testing:
             self.epsilon = 0
             self.learning_rate = 0
+	    print "epsilon is", self.epsilon
         else:
             a = 0.05
             c = -5

@@ -855,7 +855,7 @@ def intersection_train_i1():
 	#initializes the environment and the agents and runs the simulator
 	env = Environment()
 	
-	num_dummies_train = 150
+	num_dummies_train = 500
 	#num_smart_train = 1
 	
 	print "Training intersection lights"
@@ -950,6 +950,6 @@ def intersection_train_i2():
 
 if __name__ == '__main__':
 	#train()
-	intersection_train_i1()
+	#intersection_train_i1()
 	print "Training ended. Now Testing results"
-	#run()
+	run()
