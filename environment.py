@@ -79,7 +79,7 @@ class Environment():
 	
 	average_throughput = 0
 
-	traffic = TL_i2()	
+	traffic = TL_i1()	
 	
 	def __init__(self):
 		

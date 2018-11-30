@@ -976,6 +976,25 @@ def intersection_train_i2():
 	
 	print "Training intersection lights"
 	
+	
+	try:
+		# import the Q-function from a file here
+		f = open("Q-intersection.pkl","rb")
+		Q_intersection = pickle.load(f)
+		f.close()
+		
+		f = open("Q-road_segment.pkl","rb")
+		Q_road_segment = pickle.load(f)
+		f.close()
+		print "Found trained model for Vehicle"
+		
+	except:
+		print "File not found. We train from scratch"
+	
+
+	
+	
+	
 	try:
 		# import the Q-function from a file here
 		f = open("Q-for-i2.pkl","rb")
@@ -986,10 +1005,9 @@ def intersection_train_i2():
 		print "File not found. We train from scratch"
 	
 	
-	"""
 	# For training scneario
 	for i in range(num_smart_train):
-		smart_agent = create_agent(env,is_learning=True)
+		smart_agent = create_agent(env,is_learning=True,testing = True)
 		smart_agent.ID = (i+1)*2 - 1
 		
 		# assign Q-function here
@@ -999,13 +1017,14 @@ def intersection_train_i2():
 		except:
 			print "Q-function will start as an empty dictionary"
 		env.smart_agent_list_start.append(smart_agent)
-	"""
 	
+	"""
 	# sending dummies	
 	for i in range(num_dummies_train):
 		dummy_agent = create_agent(env,is_learning=False)
 		dummy_agent.ID = (i+1)*2
 		env.dummy_agent_list_start.append(dummy_agent)
+	"""
 	
 	# initialize and train the simulator
 	sim = Simulator(env, update_delay = 0.0001)

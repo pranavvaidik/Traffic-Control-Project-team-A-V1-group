@@ -117,7 +117,7 @@ class TrafficLights:
 class Q_learning:
     
     def __init__(self):
-        self.epsilon = 0
+        self.epsilon = 1
         self.alpha = 0.5
         self.gamma = 0.5
     

@@ -563,7 +563,7 @@ class Simulator():
 
 	        while not self.quit:
 	
-			self.env.reset(infrastructure_testing = False, agent_testing = False)
+			self.env.reset(agent_testing = True, infrastructure_testing = False)
 			
 			a = self.env.traffic
 	        
@@ -586,7 +586,7 @@ class Simulator():
 	            	#self.last_updated = 0.0
 	            	#self.start_time = time.time()
 	            	
-	            	while self.env.time < 3600:
+	            	while self.env.time < 1800:
 	                	
 	                    	
 	                    	# Handle GUI events
