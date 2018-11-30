@@ -6,6 +6,11 @@ Created on Wed Nov 28 10:34:42 2018
 @author: pasha_bhai
 """
 import math
+import time
+import numpy as np
+
+
+
 from Traffic_signal import Traffic_Lights,get_state,calc_reward,update_vehicles,epsilon_greedy,update_q_learning
 
 class Traffic():
@@ -32,7 +37,9 @@ class Traffic():
         self.get_traffic_signal[1] = Traffic_Lights([31,0],[None,vehicle_id.get((31,0),(31,31)),vehicle_id.get((31,31),(31,0)),None,vehicle_id.get((62,0),(31,0)),vehicle_id.get((31,0),(62,0)),vehicle_id.get((0,0),(31,0)),vehicle_id.get((31,0),(0,0))],[1,0,1,1])
         self.get_traffic_signal[2] = Traffic_Lights([62,0],[None,vehicle_id.get((62,0),(62,31)),vehicle_id.get((62,31),(62,0)),None,vehicle_id.get((65,0),(62,0)),vehicle_id.get((62,0),(65,0)),vehicle_id.get((31,0),(62,0)),vehicle_id.get((62,0),(31,0))],[1,0,1,1])
 
-         
+        self.epsilon = 1
+        
+        
      def update_traffic_lights(self, congestion_map):
          
          green_light        = [[],[],[]]
@@ -43,44 +50,52 @@ class Traffic():
          vehicle_id = congestion_map
          red_signal_violation_count = 0
          collisions_count = 0
-            
+         no_collisions  = 0
+         
+         
          # Execute this every timestep after vehicle movement
          for i in range(0,9):
           
            self.TL = self.get_traffic_signal[i]
            current_state[i] = get_state(self.TL)
+           
            action[i] = epsilon_greedy(self.TL.Q,current_state[i],self.TL.action_list,self.TL.epsilon) 
            
            #Update adjacent roads variable from info received from V group
            update_vehicles(self.TL,vehicle_id)
            
+           
            #check for red signal violation
            red_signal_violation = self.TL.check_signal_violation()
-
+           
+           
+           
            for n in range(0,len(red_signal_violation)):
                if red_signal_violation[n] == 1:
                    red_signal_violation_count+=1
            
+           
            #check for collisions
-           no_collisions = self.TL.check_collision_at_signal()
-           collisions_count+=1
-          
+           #no_collisions = self.TL.check_collision_at_signal()
+           #collisions_count+=1
+           
            #Update vehicle queue and counter associated with it to calculate waiting time
+           
            self.TL.update_queue()
-          
+           
            next_state = get_state(self.TL)
-
+           
            #Calculate reward
            reward = calc_reward(self.TL, no_collisions)    
-        
+           
            #update Q values based on reward, s, a
            s_a = (current_state[i],action[i])
            self.TL.Q[s_a] = update_q_learning(self.TL.alpha,self.TL.gamma,self.TL.Q, current_state[i], action[i], reward, next_state) 
-     
-           #TODO : throughput calculation
            
+           #TODO : throughput calculation
+         
          for i in range(0,9):
-      
+            
             self.TL = self.get_traffic_signal[i]
       
             current_state[i] = get_state(self.TL)
@@ -91,14 +106,12 @@ class Traffic():
       
             #Update traffic lights 
             if 'G' in action[i]:
-                if action[i][0] == 'G' : direction = 'NORTH'
-                if action[i][1] == 'G' : direction = 'SOUTH'
-                if action[i][2] == 'G' : direction = 'EAST'
-                if action[i][3] == 'G' : direction = 'WEST'
+                if action[i][0] == 'G' : direction = 'SOUTH'
+                if action[i][1] == 'G' : direction = 'NORTH'
+                if action[i][2] == 'G' : direction = 'WEST'
+                if action[i][3] == 'G' : direction = 'EAST'
             else:
                 direction = None
-            
-            
             
             k = i/3
             green_light[k].append(direction)
@@ -108,7 +121,9 @@ class Traffic():
             
             self.epsilon = self.TL.epsilon
             
-         return green_light
+            
+           
+         return green_light#list(np.flipud(green_light))
          
      
      #Function to reset epsilon
@@ -126,8 +141,9 @@ class Traffic():
 				    t = (math.log(1/self.epsilon-1) - c)/a
 			 t=t+1
 			 self.epsilon = 1/(math.exp(a*t+c)+1)
+         
          for i in range(9):
-	         self.get_traffic_signal[i].epsilon = self.epsilon
+             self.get_traffic_signal[i].epsilon = self.epsilon
          
          return
 

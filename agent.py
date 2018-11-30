@@ -40,7 +40,7 @@ class LearningAgent():
 		self.is_smart = True
 		
 	
-	def reset(self, destination=None, testing=False):
+	def reset(self, testing=False):
 
         	# Update epsilon using a decay function
         	# Update additional class parameters as needed
@@ -50,6 +50,7 @@ class LearningAgent():
 			self.epsilon = 0
 			self.learning_rate = 0
 		else:
+			print "epsilon = ", self.epsilon
 			a = 0.0015
 			c = -5
 			if self.epsilon == 1:
@@ -425,7 +426,7 @@ class LearningAgent():
 					if action == 'forward':
 						next_location = 'WRONG DESTINATION'
 						
-						print "WRONG DESTINATION"
+						#print "WRONG DESTINATION"
 						
 						reward = -5
 						
@@ -752,7 +753,7 @@ def create_agent(env, is_learning = True, epsilon = 1, learning_rate = 0.5, test
         return agent
 
 
-def run():
+def run_i1():
 	
 	env_sim = Environment()
 	
@@ -768,13 +769,13 @@ def run():
 	f.close()
 	
 	
-	"""try:
-		f = open("Q-for-i2.pkl","rb")
+	try:
+		f = open("Q-for-i1.pkl","rb")
 		env_sim.traffic.state_act_q = pickle.load(f)
 		f.close()
 	except:
-		print "Unable to load the i2 group Q-function."
-	"""
+		print "Unable to load the i1 group Q-function."
+	
 	
 	
 	
@@ -799,6 +800,54 @@ def run():
 
 	return
 
+
+def run_i2():
+	
+	env_sim = Environment()
+	
+	num_smart = 3000
+	
+	# import the Q-function from a file here
+	f = open("Q-intersection.pkl","rb")
+	Q_intersection = pickle.load(f)
+	f.close()
+	
+	f = open("Q-road_segment.pkl","rb")
+	Q_road_segment = pickle.load(f)
+	f.close()
+	
+	
+	try:
+		f = open("Q-for-i2.pkl","rb")
+		env_sim.traffic.Q = pickle.load(f)
+		f.close()
+	except:
+		print "Unable to load the i2 group Q-function."
+	
+	
+	
+	
+	# initialize the smart agents
+	for i in range(num_smart):
+		smart_agent = create_agent(env_sim,is_learning=True, testing = True)
+		smart_agent.ID = (i+1)*2 - 1
+		# assign Q-function to the agent here
+		smart_agent.Q_intersection = Q_intersection
+		smart_agent.Q_road_segment = Q_road_segment
+		env_sim.smart_agent_list_start.append(smart_agent)
+		
+	
+	
+	
+	
+	
+	sim2 = Simulator(env_sim, update_delay = 0.1)
+	
+	
+	sim2.run()
+
+	return
+	
 		
 def train():
 	
@@ -855,10 +904,29 @@ def intersection_train_i1():
 	#initializes the environment and the agents and runs the simulator
 	env = Environment()
 	
-	num_dummies_train = 500
-	#num_smart_train = 1
+	#num_dummies_train = 500
+	num_smart_train = 3000
 	
 	print "Training intersection lights"
+	
+	
+	try:
+		# import the Q-function from a file here
+		f = open("Q-intersection.pkl","rb")
+		Q_intersection = pickle.load(f)
+		f.close()
+		
+		f = open("Q-road_segment.pkl","rb")
+		Q_road_segment = pickle.load(f)
+		f.close()
+		print "Found trained model for Vehicle"
+		
+	except:
+		print "File not found. We train from scratch"
+	
+
+	
+	
 	
 	try:
 		# import the Q-function from a file here
@@ -870,10 +938,10 @@ def intersection_train_i1():
 		print "File not found. We train from scratch"
 	
 	
-	"""
+	
 	# For training scneario
 	for i in range(num_smart_train):
-		smart_agent = create_agent(env,is_learning=True)
+		smart_agent = create_agent(env,is_learning=True,testing = True)
 		smart_agent.ID = (i+1)*2 - 1
 		
 		# assign Q-function here
@@ -883,14 +951,14 @@ def intersection_train_i1():
 		except:
 			print "Q-function will start as an empty dictionary"
 		env.smart_agent_list_start.append(smart_agent)
-	"""
 	
+	"""
 	# sending dummies	
 	for i in range(num_dummies_train):
 		dummy_agent = create_agent(env,is_learning=False)
 		dummy_agent.ID = (i+1)*2
 		env.dummy_agent_list_start.append(dummy_agent)
-	
+	"""
 	# initialize and train the simulator
 	sim = Simulator(env, update_delay = 0.0001)
 	
@@ -950,6 +1018,8 @@ def intersection_train_i2():
 
 if __name__ == '__main__':
 	#train()
-	#intersection_train_i1()
+	intersection_train_i1()
+	#intersection_train_i2()
 	print "Training ended. Now Testing results"
-	run()
+	#run_i1()
+	#run_i2()

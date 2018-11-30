@@ -79,7 +79,7 @@ class Environment():
 	
 	average_throughput = 0
 
-	traffic = TL_i1()	
+	traffic = TL_i2()	
 	
 	def __init__(self):
 		
@@ -220,7 +220,7 @@ class Environment():
 		
 	
 	
-	def reset(self,is_testing = False):
+	def reset(self,agent_testing = False, infrastructure_testing = False):
 	
 		# update the average metrics
 		
@@ -236,15 +236,15 @@ class Environment():
 		#self.throughput = 0
 		
 		#try:
-		self.traffic.reset(testing = is_testing)
+		self.traffic.reset(testing = infrastructure_testing)
 		#except:
 		#	print "Couldn't reset traffic lights"
 		
 		
 		# clear all starting, current and end locations of agents
 		for agent in self.collision_vehicle_list:
-			print "CRASHED"
-			agent.reset(testing = is_testing)
+			#print "CRASHED"
+			agent.reset(testing = agent_testing)
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
@@ -255,8 +255,8 @@ class Environment():
 		
 		
 		for agent in self.smart_agent_list_current:
-			print "NOT REACHED"
-			agent.reset(testing = is_testing)
+			#print "NOT REACHED"
+			agent.reset(testing = agent_testing)
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
@@ -292,7 +292,7 @@ class Environment():
 				
 				#print "FAILED"
 			"""
-			agent.reset(testing = is_testing)
+			agent.reset(testing = agent_testing)
 			agent.location = None
 			agent.destination = None
 			agent.start_point = None
@@ -362,7 +362,7 @@ class Environment():
 			if len(self.agent_list_start) > 0:
 				# check if the entry slot is empty
 				if not self.road_segments[current_road][-1]:
-					send_flag = np.random.choice([True,False],p=[1,0]) # will change the distribution later
+					send_flag = np.random.choice([True,False],p=[0.75,0.25])#[0.5,0.5]) # will change the distribution later
 	               		else:
 	               			send_flag = False
 	                else:

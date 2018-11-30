@@ -122,9 +122,11 @@ class Traffic_Lights:
     #Function to the check the vehicle's vanished
     def check_vehicle_vanished(self, vid, adjacent_roads):
          cnt = 0
+         #print adjacent_roads
+         #print len(adjacent_roads)
          for i in range(0,len(adjacent_roads)):
                 if(vid in adjacent_roads):
-                    print vid,adjacent_roads[i]
+                    #print vid,adjacent_roads[i]
                     cnt = cnt + 1
          if(cnt == 0):  #vehicle vanished
              return 1

@@ -380,7 +380,7 @@ class Simulator():
 
 	        while not self.quit:
 	
-			self.env.reset(is_testing = True)
+			self.env.reset(agent_testing = True, infrastructure_testing = True)
 			        
 	            	# Break if we've reached the limit of testing trials
 	            	if trial > n_test:
@@ -463,7 +463,7 @@ class Simulator():
 
 	        while not self.quit:
 	
-			self.env.reset(is_testing = False)
+			self.env.reset(agent_testing = True, infrastructure_testing = False)
 			
 			a = self.env.traffic
 	        
@@ -563,7 +563,7 @@ class Simulator():
 
 	        while not self.quit:
 	
-			self.env.reset(is_testing = False)
+			self.env.reset(infrastructure_testing = False, agent_testing = False)
 			
 			a = self.env.traffic
 	        
