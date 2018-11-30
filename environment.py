@@ -150,9 +150,7 @@ class Environment():
 		self.road_segments[((31,0),(62,0))] = [None]*30	
 		self.road_segments[((62,0),(31,0))] = [None]*30
 		
-		# call i-group object here	
 		
-		#self.traffic = TL_i1()
 		
 		for loc in self.nodes:
 			if loc not in self.exit_nodes:			
@@ -318,19 +316,19 @@ class Environment():
 	def update_traffic_lights(self):
 		
 		self.traffic_lights = self.update_traffic_from_infrastructure()
-		
+		"""
 		try:
 			self.traffic_lights = self.update_traffic_from_infrastructure()
 		except:
 			
-			print "Random lights were used"
-		
-			for loc in self.nodes:
-				dirs = [None]
-				if loc not in self.exit_nodes:                
-					#choose the signal randomly from legal directions
-					self.traffic_lights[loc] = np.random.choice(self.directions_to_loc[loc])
+		print "Random lights were used"
 	
+		for loc in self.nodes:
+			dirs = [None]
+			if loc not in self.exit_nodes:                
+				#choose the signal randomly from legal directions
+				self.traffic_lights[loc] = np.random.choice(self.directions_to_loc[loc])
+"""
    		return
 	
 	
@@ -456,7 +454,7 @@ class Environment():
 		
 		
 		# call i-group function here and obtain traffic lights as a list		
-		traffic_lights_list = np.flipud(self.traffic.update_traffic_lights(congestion_map))
+		traffic_lights_list = self.traffic.update_traffic_lights(congestion_map)#np.flipud()
 		
 		#print "lights are: ", traffic_lights_list
 		

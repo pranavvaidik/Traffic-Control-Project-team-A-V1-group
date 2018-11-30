@@ -768,13 +768,13 @@ def run():
 	f.close()
 	
 	
-	try:
-		f = open("Q-for-i1.pkl","rb")
+	"""try:
+		f = open("Q-for-i2.pkl","rb")
 		env_sim.traffic.state_act_q = pickle.load(f)
 		f.close()
 	except:
-		print "Unable to load the i1 group Q-function."
-	
+		print "Unable to load the i2 group Q-function."
+	"""
 	
 	
 	
@@ -850,7 +850,7 @@ def train():
 	return
 	
 
-def intersection_train():
+def intersection_train_i1():
 	
 	#initializes the environment and the agents and runs the simulator
 	env = Environment()
@@ -894,12 +894,62 @@ def intersection_train():
 	# initialize and train the simulator
 	sim = Simulator(env, update_delay = 0.0001)
 	
-	sim.train_run_intersection(tolerance = 0.2, max_trials = 0)
+	sim.train_run_intersection_i1(tolerance = 0.2, max_trials = 0)
 	
 	return
 
+def intersection_train_i2():
+	
+	#initializes the environment and the agents and runs the simulator
+	env = Environment()
+	
+	num_dummies_train = 150
+	#num_smart_train = 1
+	
+	print "Training intersection lights"
+	
+	try:
+		# import the Q-function from a file here
+		f = open("Q-for-i2.pkl","rb")
+		env.traffic.Q = pickle.load(f)
+		f.close()
+		
+	except:
+		print "File not found. We train from scratch"
+	
+	
+	"""
+	# For training scneario
+	for i in range(num_smart_train):
+		smart_agent = create_agent(env,is_learning=True)
+		smart_agent.ID = (i+1)*2 - 1
+		
+		# assign Q-function here
+		try:
+			smart_agent.Q_intersection = Q_intersection
+			smart_agent.Q_road_segment = Q_road_segment
+		except:
+			print "Q-function will start as an empty dictionary"
+		env.smart_agent_list_start.append(smart_agent)
+	"""
+	
+	# sending dummies	
+	for i in range(num_dummies_train):
+		dummy_agent = create_agent(env,is_learning=False)
+		dummy_agent.ID = (i+1)*2
+		env.dummy_agent_list_start.append(dummy_agent)
+	
+	# initialize and train the simulator
+	sim = Simulator(env, update_delay = 0.0001)
+	
+	sim.train_run_intersection_i2(tolerance = 0.2, max_trials = 0)
+	
+	return
+
+
+
 if __name__ == '__main__':
 	#train()
-	intersection_train()
+	intersection_train_i1()
 	print "Training ended. Now Testing results"
 	#run()
