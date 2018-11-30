@@ -877,7 +877,7 @@ def run_i2():
 	
 	
 	
-	sim2 = Simulator(env_sim, update_delay = 0.1)
+	sim2 = Simulator(env_sim, update_delay = 0.01)
 	
 	
 	sim2.run()
@@ -1007,8 +1007,8 @@ def intersection_train_i2():
 	#initializes the environment and the agents and runs the simulator
 	env = Environment()
 	
-	num_dummies_train = 150
-	#num_smart_train = 1
+	#num_dummies_train = 150
+	num_smart_train = 3000
 	
 	print "Training intersection lights"
 	

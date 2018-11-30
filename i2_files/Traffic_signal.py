@@ -50,16 +50,16 @@ class Traffic_Lights:
         
         #Creating the S_A_pairs
         if (0 in signal_direction):
-            state_list_temp  = list(itertools.product(['L','M','H'], repeat=3))   #states
-            action_list_temp = [('R','R','R'),('G','R','R'),('R','G','R'),('R','R','G')] #Actions
-            index            = signal_direction.index(0)
+            state_list_temp       = list(itertools.product(['L','M','H'], repeat=3))   #states
+            action_list_temp      = [('G','R','R'),('R','G','R'),('R','R','G')] #Actions
+            index                 = signal_direction.index(0)
             self.state_list       = lt_append(state_list_temp,index,self.state_list)
             self.action_list      = lt_append(action_list_temp,index,self.action_list)
-            s_a_list         = list(itertools.product(self.state_list,self.action_list)) #Q_s_a
+            s_a_list              = list(itertools.product(self.state_list,self.action_list)) #Q_s_a
         else:
             self.state_list       = list(itertools.product(['L','M','H'], repeat=4))   #states
-            self.action_list      = [('R','R','R','R'),('G','R','R','R'),('R','G','R','R'),('R','R','G','R'),('R','R','R','G')] #Actions
-            s_a_list         = list(itertools.product(self.state_list,self.action_list)) #Q_s_a
+            self.action_list      = [('G','R','R','R'),('R','G','R','R'),('R','R','G','R'),('R','R','R','G')] #Actions
+            s_a_list              = list(itertools.product(self.state_list,self.action_list)) #Q_s_a
        
 
         #Creating the dictionary
@@ -111,10 +111,12 @@ class Traffic_Lights:
        
         if signal == 'R':
             if len(self.vehicle_queue[i]) > 0:
-              if(current_id != self.vehicle_queue[i][-1][0]):
-                return 1
-              else:
-                return 0
+              if(self.vehicle_queue[i][-1][0] is not None):
+                  if(current_id != self.vehicle_queue[i][-1][0]):
+                      print "violation occurred",current_id,i
+                      return 1
+                  else:
+                      return 0
         else:
             return 0
 
@@ -122,11 +124,8 @@ class Traffic_Lights:
     #Function to the check the vehicle's vanished
     def check_vehicle_vanished(self, vid, adjacent_roads):
          cnt = 0
-         #print adjacent_roads
-         #print len(adjacent_roads)
          for i in range(0,len(adjacent_roads)):
-                if(vid in adjacent_roads):
-                    #print vid,adjacent_roads[i]
+                if(vid not in adjacent_roads):
                     cnt = cnt + 1
          if(cnt == 0):  #vehicle vanished
              return 1
@@ -157,7 +156,16 @@ class Traffic_Lights:
             if self.vehicle_queue[i][-1][0] != None:
                vid_vanish_check = self.check_vehicle_vanished(self.vehicle_queue[i][-1][0], adjacent_roads)
         return vid_vanish_check
-
+    
+    def check_u_turn_violation(self):
+        u_turn = 0
+        for i in range(0,len(self.signal_direction)):
+            if(self.signal_direction[i]):
+                if(self.signal[i]=="G"):
+                    if self.vehicle_queue[i][-1][0] != None:
+                        if(self.vehicle_queue[i][-1][0] in self.adjacent_roads[i*2+1]):
+                            u_turn = 1
+        return u_turn
 
 #Update adjacent lanes variable of traffic light class based on input from V group
 def update_vehicles(traffic_intersection,vehicle_id):
@@ -193,11 +201,11 @@ def update_vehicles(traffic_intersection,vehicle_id):
                 k1 = ((x1,y1),(x,y))
                 #'k2 = '[' + str(x) + ',' + str(y) +'],[' + str(x1) + ','+ str(y1)+ ']'
                 k2 = ((x,y),(x1,y1))
-                traffic_intersection.adjacent_roads.insert(i*2,vehicle_id[k1])
-                traffic_intersection.adjacent_roads.insert(i*2+1,vehicle_id[k2])
+                traffic_intersection.adjacent_roads[i*2] = vehicle_id[k1]
+                traffic_intersection.adjacent_roads[i*2+1] = vehicle_id[k2]
             else:
-                traffic_intersection.adjacent_roads.insert(i*2,None)
-                traffic_intersection.adjacent_roads.insert(i*2+1,None)
+                traffic_intersection.adjacent_roads[i*2] = None
+                traffic_intersection.adjacent_roads[i*2+1] = None
 
              
 # Update waiting time for each vehicle based on vehicle movement
@@ -234,9 +242,9 @@ def get_state(traffic_intersection):
         if(traffic_intersection.signal_direction[i]):
            v_l = traffic_intersection.vehicle_queue[i]
            length = get_length(v_l)
-           if length < 3:
+           if length < 2:
         	queue_length.insert(i,'L')
-           elif length >=3 and length < 5:
+           elif length >=2 and length < 4:
         	queue_length.insert(i,'M')
            else:
         	queue_length.insert(i,'H')
